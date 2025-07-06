@@ -1488,20 +1488,7 @@ getSaveData: function() {
 
 
 <!-- Global Save Button -->
-<button id="globalSaveBtn" onclick="saveAllData()" style="
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 5000;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-">💾 Save All</button>
+
 
 
 
@@ -2855,31 +2842,42 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-</body>
+
+<!-- Global Save All Button -->
+<button id="globalSaveBtn" onclick="saveAllData()" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+">💾 Save All</button>
+
 
 <script>
 function saveAllData() {
-    let mapData = {
-        units: typeof units !== 'undefined' ? units : {},
-        camera: typeof camera !== 'undefined' ? camera : {},
-        siloNukes: typeof siloNukes !== 'undefined' ? siloNukes : {},
-        nationList: typeof nationList !== 'undefined' ? nationList : [],
-        nationStats: typeof nationStats !== 'undefined' ? nationStats : {},
-        nationBonuses: typeof nationBonuses !== 'undefined' ? nationBonuses : {},
-        flags: typeof flagImages !== 'undefined' ? Object.keys(flagImages) : []
-    };
+  const mapData = window.getMapSaveData?.() || {};
+  const gameData = window.GameManager?.getSaveData?.() || {};
+  const fullSave = { map: mapData, game: gameData };
 
-    let gameData = window.GameManager?.getSaveData?.() || null;
-    let fullData = { map: mapData, game: gameData };
-
-    const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "nations.json";
-    a.click();
-    URL.revokeObjectURL(url);
+  try {
+    localStorage.setItem("nations_full_save", JSON.stringify(fullSave));
+    alert("✅ All game data saved to browser storage.");
+  } catch (e) {
+    alert("❌ Failed to save to browser storage.");
+    console.error(e);
+  }
 }
 </script>
+
+</body>
+
+
 
 </html>
