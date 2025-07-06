@@ -1,0 +1,2885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NationStates Game - Merged UI (Scoped)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background-color: #0d0d0d; color: #fff; }
+        .tabs {
+    display: flex;
+    background-color: #1a1a1a;
+    border-bottom: 2px solid #553c9a;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 3000;
+}
+.tab-content {
+    display: none;
+    padding-top: 50px;
+}
+.tab-content.active {
+    display: block;
+    height: calc(100vh - 50px);
+    overflow: auto;
+}
+    </style>
+    <style>
+    #map body{margin:0;padding:0;font-family:Arial;background:#1a1a1a;color:#fff;overflow:hidden}.toolbar{position:fixed;top:10px;left:10px;right:10px;display:flex;gap:10px;padding:10px;background:rgba(45,45,45,.9);border-radius:8px;flex-wrap:wrap;align-items:center;z-index:1000;backdrop-filter:blur(5px)}.tool-group{display:flex;gap:5px;align-items:center;padding:5px 10px;background:#3d3d3d;border-radius:5px}button{padding:8px 12px;border:none;border-radius:4px;cursor:pointer;font-size:14px;transition:all .2s}button:hover{opacity:.8}.tool-btn{background:#4CAF50;color:#fff}.tool-btn.active{background:#45a049;box-shadow:0 0 10px rgba(76,175,80,.5)}.action-btn{background:#2196F3;color:#fff}.battle-btn{background:#FF5722;color:#fff;font-weight:bold}.battle-btn.active{background:#F44336;box-shadow:0 0 10px rgba(255,87,34,.5)}.danger-btn{background:#f44336;color:#fff}select,input{padding:8px;border:none;border-radius:4px;background:#4d4d4d;color:#fff;font-size:14px}.canvas-container{position:fixed;top:0;left:0;width:100vw;height:100vh}canvas{display:block;cursor:crosshair;width:100%;height:100%}.info-panel{position:fixed;top:20px;right:20px;background:rgba(0,0,0,.8);padding:15px;border-radius:8px;max-width:250px;font-size:12px}.unit-count{margin-left:10px;font-size:12px;color:#ccc}.status{margin-top:10px;padding:5px;border-radius:4px;font-size:12px;text-align:center}.status.success{background:rgba(76,175,80,.2);color:#4CAF50}.status.error{background:rgba(244,67,54,.2);color:#f44336}.status.battle{background:rgba(255,87,34,.2);color:#FF5722}.silo-menu{position:absolute;background:rgba(0,0,0,.9);border:2px solid #666;border-radius:8px;padding:10px;z-index:1000;min-width:150px}.silo-menu button{display:block;width:100%;margin:2px 0;padding:8px;background:#4CAF50;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px}.silo-menu button:hover{background:#45a049}.silo-menu button:disabled{background:#666;cursor:not-allowed}.battle-dialog,.stats-dialog{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(20,20,20,.95);border-radius:12px;padding:20px;z-index:2000;backdrop-filter:blur(10px)}.battle-dialog{border:2px solid #FF5722;min-width:400px}.stats-dialog{border:2px solid #2196F3;min-width:500px;max-width:80vw;max-height:80vh;overflow-y:auto}.stats-dialog h3{color:#2196F3;margin-top:0;text-align:center}.nation-stat{margin:10px 0;padding:10px;border:1px solid #555;border-radius:8px;background:rgba(40,40,40,.8)}.nation-stat h4{margin:0 0 10px 0;color:#ccc}.nation-stat .reset-btn{background:#ff6b6b}.stats-section{margin:15px 0;padding:10px;border:1px solid #444;border-radius:6px;background:rgba(30,30,30,.6)}.irregular-dialog{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(20,20,20,.95);border:2px solid #4CAF50;border-radius:12px;padding:20px;z-index:2000;backdrop-filter:blur(10px);min-width:300px}.irregular-dialog h3{color:#4CAF50;margin-top:0;text-align:center}.irregular-input{width:100%;padding:10px;margin:10px 0;border:1px solid #555;border-radius:4px;background:#3d3d3d;color:#fff;font-size:16px}.irregular-controls{display:flex;gap:10px;justify-content:center;margin-top:15px}.battle-sides{display:flex;gap:20px;margin:20px 0}.battle-side{flex:1;padding:15px;border:1px solid #555;border-radius:8px;background:rgba(40,40,40,.8)}.battle-side h4{margin-top:0;color:#ccc}.battle-controls{display:flex;gap:10px;justify-content:center;margin-top:20px}.battle-results{margin:15px 0;padding:15px;border-radius:8px;background:rgba(255,87,34,.1);border:1px solid #FF5722}.battle-dialog h3{color:#FF5722;margin-top:0;text-align:center}.die{width:45px;height:45px;border:2px solid #FF5722;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;background:rgba(255,87,34,.2)}
+    </style>
+    <style>
+    
+#console body{
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background-color: #0d0d0d;
+color: #b794f6;
+margin: 0;
+padding: 20px;
+line-height: 1.4;
+}
+
+#console .console{
+max-width: 1200px;
+margin: 0 auto;
+background-color: #1a1a1a;
+border: 2px solid #553c9a;
+border-radius: 8px;
+padding: 20px;
+box-shadow: 0 0 20px rgba(139, 69, 19, 0.3);
+}
+
+#console .header{
+text-align: center;
+color: #d6bcfa;
+margin-bottom: 20px;
+font-size: 18px;
+border-bottom: 1px solid #553c9a;
+padding-bottom: 10px;
+}
+
+#console .output{
+height: 400px;
+overflow-y: scroll;
+background-color: #000;
+border: 1px solid #553c9a;
+padding: 10px;
+margin-bottom: 10px;
+white-space: pre-wrap;
+font-size: 14px;
+}
+
+#console .input-line{
+display: flex;
+align-items: center;
+margin-bottom: 10px;
+}
+
+#console .prompt{
+color: #e9d5ff;
+margin-right: 5px;
+}
+
+#console #commandInput{
+flex: 1;
+background-color: #000;
+border: 1px solid #553c9a;
+color: #b794f6;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+font-size: 14px;
+padding: 5px 10px;
+outline: none;
+}
+
+#console #commandInput:focus{
+border-color: #9f7aea;
+box-shadow: 0 0 5px rgba(159, 122, 234, 0.5);
+}
+
+#console .button-row{
+display: flex;
+gap: 10px;
+margin-top: 10px;
+flex-wrap: wrap;
+}
+
+#console button{
+background-color: #2d1b69;
+border: 1px solid #9f7aea;
+color: #d6bcfa;
+padding: 5px 15px;
+cursor: pointer;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+font-size: 12px;
+border-radius: 4px;
+}
+
+#console button:hover{
+background-color: #553c9a;
+box-shadow: 0 0 5px rgba(159, 122, 234, 0.5);
+}
+
+#console .output::-webkit-scrollbar{
+width: 8px;
+}
+
+#console .output::-webkit-scrollbar-track{
+background: #1a1a1a;
+}
+
+#console .output::-webkit-scrollbar-thumb{
+background: #553c9a;
+border-radius: 4px;
+}
+
+#console .output::-webkit-scrollbar-thumb:hover{
+background: #9f7aea;
+}
+
+    </style>
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
+            document.querySelector(`.tab-button[onclick*="${tab}"]`).classList.add('active');
+            document.getElementById(tab).classList.add('active');
+        }
+    </script>
+</head>
+<body>
+
+<div class="tabs">
+    <button class="tab-button active" onclick="switchTab('map')">🗺️ Map</button>
+    <button class="tab-button" onclick="switchTab('console')">💻 Console</button>
+</div>
+
+<div id="map" class="tab-content active">
+<div class="toolbar"><div class="tool-group"><button class="tool-btn active" onclick="setTool('army')">🪖 Army</button><button class="tool-btn" onclick="setTool('railroad')">🚂 Railroad</button><button class="tool-btn" onclick="setTool('silo')">🏭 Silo</button><button class="tool-btn" onclick="setTool('port')">⚓ Port</button><button class="tool-btn" onclick="setTool('move')">✋ Move</button><button class="tool-btn" onclick="setTool('delete')">🗑️ Delete</button><button class="battle-btn" onclick="setTool('battle')">⚔️ Battle</button></div><div class="tool-group"><button class="action-btn" onclick="zoomIn()">🔍+ Zoom In</button><button class="action-btn" onclick="zoomOut()">🔍- Zoom Out</button><button class="action-btn" onclick="resetView()">🎯 Reset View</button><button class="action-btn" onclick="spawnIrregular()">⚡ Irregular</button></div><div class="tool-group"><label>Army:</label><select id="armyBattalions"><option value="1">1 Battalion (Black)</option><option value="2">2 Battalions (White)</option><option value="3">3 Battalions (Red)</option><option value="4">4 Battalions (Green)</option><option value="5">5 Battalions (Blue)</option></select></div><div class="tool-group"><label>Nation:</label><select id="armyNation"></select><label>Dice Bonus:</label><input type="number" id="nationDiceBonus" placeholder="0" style="width:60px" min="-3" max="3" step="1"><button class="action-btn" onclick="setNationBonus()">Set Bonus</button></div><div class="tool-group"><label>Add Nation:</label><input type="text" id="nationName" placeholder="Nation name" style="width:100px"><input type="text" id="nationFilename" placeholder="filename (optional)" style="width:100px"><button class="action-btn" onclick="addNation()">➕ Add</button><button class="danger-btn" onclick="removeNation()">➖ Remove</button></div><div class="tool-group"><button class="action-btn" onclick="saveMap()">💾 Save</button><button class="action-btn" onclick="loadMap()">📁 Load</button><button class="action-btn" onclick="loadBackground()">🖼️ Background</button><button class="action-btn" onclick="loadFlags()">🏴 Flags</button><button class="action-btn" onclick="showNationStats()">📊 Nation Stats</button><button class="danger-btn" onclick="clearMap()">🗑️ Clear All</button></div><div class="unit-count">Armies: <span id="armyCount">0</span> | Railroads: <span id="railroadCount">0</span> | Silos: <span id="siloCount">0</span> | Ports: <span id="portCount">0</span></div></div><div class="canvas-container"><canvas id="mapCanvas"></canvas></div><div class="info-panel"><div><strong>Strategic Map Editor</strong></div><div>Current Tool: <span id="currentTool">Army</span></div><div>Middle-click + drag to pan</div><div>Scroll wheel to zoom</div><div>Right-click to delete</div><div>⚔️ Battle: Click two armies to battle</div><div>🏴 Flags: Leave filename empty to auto-use nation name</div><div id="status" class="status"></div></div><input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleFileLoad(event)"><script>const canvas=document.getElementById('mapCanvas'),ctx=canvas.getContext('2d');let currentTool='army',isDragging=false,draggedUnit=null,dragOffset={x:0,y:0},railroadDrawing=false,railroadStart=null,tempRailroad=null,backgroundImage=null,flagImages={},nationList=[],nationStats={},nationBonuses={},battleMode=false,battleAttacker=null,battleDefender=null,selectedForBattle=[],siloNukes={},currentSiloMenu=null,nukeDragging=false,nukeFromSilo=null,nukeTargeting=false,targetingSilo=null,explosions=[],camera={x:0,y:0,zoom:1},isPanning=false,lastPanPoint={x:0,y:0},lastMousePos={x:0,y:0},units={armies:[],railroads:[],silos:[],ports:[]},unitConfig={army:{size:25,color:'red'},railroad:{size:25,color:'#8B4513'},silo:{size:18,color:'#666'},port:{size:22,color:'#4169E1'}};class BattleCalculator{static rollDice(){return{attackerDie1:Math.floor(Math.random()*6)+1,attackerDie2:Math.floor(Math.random()*6)+1,defenderDie1:Math.floor(Math.random()*6)+1,defenderDie2:Math.floor(Math.random()*6)+1}}static calculateDamage(attackerMP,defenderMP,attackerDice,defenderDice,attackerNation,defenderNation){const attackerBonus=nationBonuses[attackerNation]||0,defenderBonus=nationBonuses[defenderNation]||0;const attackerTotal=attackerDice.attackerDie1+attackerDice.attackerDie2+attackerBonus,defenderTotal=defenderDice.defenderDie1+defenderDice.defenderDie2+defenderBonus;let winner,loser,winnerMP,loserMP;if(attackerTotal<defenderTotal){winner='attacker';loser='defender';winnerMP=attackerMP;loserMP=defenderMP}else if(defenderTotal<attackerTotal){winner='defender';loser='attacker';winnerMP=defenderMP;loserMP=attackerMP}else{winner='tie';loser='tie';winnerMP=Math.min(attackerMP,defenderMP);loserMP=Math.max(attackerMP,defenderMP)}const diceDifference=Math.abs(attackerTotal-defenderTotal);let winnerDamagePercent,loserDamagePercent;if(winner==='tie'){winnerDamagePercent=.25;loserDamagePercent=.25}else{const baseDamage=.15;const bonusDamage=diceDifference*.05;winnerDamagePercent=Math.max(.05,baseDamage-bonusDamage*.5);loserDamagePercent=Math.max(.1,baseDamage+bonusDamage)}let winnerDamage=Math.round(winnerMP*winnerDamagePercent),loserDamage=Math.round(loserMP*loserDamagePercent);const attackerCrit=Math.random()<1/60,defenderCrit=Math.random()<1/60;if(winner==='attacker'&&attackerCrit)loserDamage*=3;if(winner==='defender'&&defenderCrit)loserDamage*=3;if(winner==='tie'){if(attackerCrit)defenderDamage=winnerDamage*3;if(defenderCrit)attackerDamage=winnerDamage*3}return{attackerDamage:winner==='attacker'?winnerDamage:loserDamage,defenderDamage:winner==='defender'?winnerDamage:loserDamage,attackerCrit:winner==='attacker'?attackerCrit:false,defenderCrit:winner==='defender'?defenderCrit:false,attackerDiceSum:attackerTotal,defenderDiceSum:defenderTotal,attackerBonus,defenderBonus,winner:winner==='tie'?'tie':winner,diceDifference}}static conductBattle(attacker,defender){const dice=this.rollDice(),attackerMP=Math.round(attacker.battalions*1000),defenderMP=Math.round(defender.battalions*1000),damageResult=this.calculateDamage(attackerMP,defenderMP,dice,dice,attacker.nation,defender.nation);this.updateNationStats(attacker.nation,defender.nation,damageResult.defenderDamage,damageResult.attackerDamage);return{dice,attackerMP,defenderMP,attackerMPLoss:damageResult.attackerDamage,defenderMPLoss:damageResult.defenderDamage,attackerBattalionLoss:damageResult.attackerDamage/1000,defenderBattalionLoss:damageResult.defenderDamage/1000,attackerCrit:damageResult.attackerCrit,defenderCrit:damageResult.defenderCrit,attackerDiceSum:damageResult.attackerDiceSum,defenderDiceSum:damageResult.defenderDiceSum,attackerBonus:damageResult.attackerBonus,defenderBonus:damageResult.defenderBonus,winner:damageResult.winner,diceDifference:damageResult.diceDifference||0}}static updateNationStats(attackerNation,defenderNation,attackerDealt,defenderDealt){nationStats[attackerNation]||(nationStats[attackerNation]={battlesWon:0,battlesLost:0,totalDamageDealt:0,totalDamageTaken:0,totalBattles:0});nationStats[defenderNation]||(nationStats[defenderNation]={battlesWon:0,battlesLost:0,totalDamageDealt:0,totalDamageTaken:0,totalBattles:0});nationStats[attackerNation].totalDamageDealt+=attackerDealt;nationStats[attackerNation].totalDamageTaken+=defenderDealt;nationStats[attackerNation].totalBattles+=1;nationStats[defenderNation].totalDamageDealt+=defenderDealt;nationStats[defenderNation].totalDamageTaken+=attackerDealt;nationStats[defenderNation].totalBattles+=1;attackerDealt>defenderDealt?(nationStats[attackerNation].battlesWon+=1,nationStats[defenderNation].battlesLost+=1):(nationStats[defenderNation].battlesWon+=1,nationStats[attackerNation].battlesLost+=1)}}function setTool(tool){currentTool=tool;battleMode=tool==='battle';battleMode&&(selectedForBattle=[],battleAttacker=null,battleDefender=null,showStatus('Battle mode: Click two armies to battle','battle'));document.getElementById('currentTool').textContent=tool.charAt(0).toUpperCase()+tool.slice(1);document.querySelectorAll('.tool-btn, .battle-btn').forEach(btn=>btn.classList.remove('active'));event.target.classList.add('active');canvas.style.cursor=tool==='move'?'grab':'crosshair'}function showBattleDialog(attacker,defender,battleResult){const dialog=document.createElement('div');dialog.className='battle-dialog';dialog.innerHTML=`<h3>⚔️ BATTLE REPORT ⚔️</h3><div class="battle-sides"><div class="battle-side"><h4>🔴 Attacker</h4><div>Nation: ${attacker.nation}</div><div>Battalions: ${attacker.battalions}</div><div>Manpower: ${battleResult.attackerMP.toLocaleString()}</div><div>Dice Total: ${battleResult.attackerDiceSum} ${battleResult.attackerBonus!==0?`(${battleResult.attackerBonus>0?'+':''}${battleResult.attackerBonus} bonus)`:''}</div><div style="color: #f44336;">MP Losses: ${battleResult.attackerMPLoss.toLocaleString()} ${battleResult.attackerCrit?'⚡ CRITICAL HIT! (3x)':''}</div><div style="color: #f44336;">Battalion Losses: ${Math.round(battleResult.attackerBattalionLoss*100)/100}</div></div><div class="battle-side"><h4>🔵 Defender</h4><div>Nation: ${defender.nation}</div><div>Battalions: ${defender.battalions}</div><div>Manpower: ${battleResult.defenderMP.toLocaleString()}</div><div>Dice Total: ${battleResult.defenderDiceSum} ${battleResult.defenderBonus!==0?`(${battleResult.defenderBonus>0?'+':''}${battleResult.defenderBonus} bonus)`:''}</div><div style="color: #f44336;">MP Losses: ${battleResult.defenderMPLoss.toLocaleString()} ${battleResult.defenderCrit?'⚡ CRITICAL HIT! (3x)':''}</div><div style="color: #f44336;">Battalion Losses: ${Math.round(battleResult.defenderBattalionLoss*100)/100}</div></div></div><div class="dice-display"><div><div>Attacker Die 1</div><div class="die">${battleResult.dice.attackerDie1}</div></div><div><div>Attacker Die 2</div><div class="die">${battleResult.dice.attackerDie2}</div></div><div><div>Defender Die 1</div><div class="die">${battleResult.dice.defenderDie1}</div></div><div><div>Defender Die 2</div><div class="die">${battleResult.dice.defenderDie2}</div></div></div><div class="battle-results"><div style="text-align: center; font-size: 18px; font-weight: bold; color: ${battleResult.winner==='attacker'?'#4CAF50':battleResult.winner==='defender'?'#FF5722':'#FFA500'};">${battleResult.winner==='attacker'?'🔴 ATTACKER WINS!':battleResult.winner==='defender'?'🔵 DEFENDER WINS!':'⚖️ TIE!'}</div><div style="text-align: center; margin-top: 5px;">Dice Difference: ${battleResult.diceDifference||0} ${battleResult.diceDifference>=6?'(DEVASTATING!)':battleResult.diceDifference>=4?'(CRUSHING!)':battleResult.diceDifference>=2?'(DECISIVE!)':'(CLOSE!)'}</div><div style="text-align: center; margin-top: 10px;">Total MP Casualties: ${(battleResult.attackerMPLoss+battleResult.defenderMPLoss).toLocaleString()} | Total Battalion Casualties: ${Math.round((battleResult.attackerBattalionLoss+battleResult.defenderBattalionLoss)*100)/100}</div></div><div class="battle-controls"><button class="action-btn" onclick="applyBattleResult(${JSON.stringify(battleResult).replace(/"/g,'&quot;')}); closeBattleDialog();">Apply Results</button><button class="danger-btn" onclick="closeBattleDialog();">Cancel</button></div>`;document.body.appendChild(dialog)}function applyBattleResult(battleResult){if(battleAttacker){const newAttackerMP=Math.max(0,battleAttacker.battalions*1000-battleResult.attackerMPLoss);battleAttacker.battalions=newAttackerMP/1000;if(battleAttacker.battalions<.05){const index=units.armies.indexOf(battleAttacker);index>-1&&(units.armies.splice(index,1),showStatus('Attacker army destroyed!','error'))}}if(battleDefender){const newDefenderMP=Math.max(0,battleDefender.battalions*1000-battleResult.defenderMPLoss);battleDefender.battalions=newDefenderMP/1000;if(battleDefender.battalions<.05){const index=units.armies.indexOf(battleDefender);index>-1&&(units.armies.splice(index,1),showStatus('Defender army destroyed!','error'))}}battleAttacker=null;battleDefender=null;selectedForBattle=[];redraw();showStatus('Battle results applied!','success')}function closeBattleDialog(){const dialog=document.querySelector('.battle-dialog');dialog&&document.body.removeChild(dialog);battleAttacker=null;battleDefender=null;selectedForBattle=[];redraw()}function showNationStats(){const dialog=document.createElement('div');dialog.className='stats-dialog';dialog.innerHTML=generateStatsHTML();document.body.appendChild(dialog)}function generateStatsHTML(){let statsHTML=`<h3>📊 Nation Statistics</h3><div style="text-align: center; margin-bottom: 20px;"><button class="action-btn" onclick="refreshStatsDialog()">🔄 Refresh</button><button class="danger-btn" onclick="closeStatsDialog()">✖ Close</button><button class="danger-btn" onclick="resetAllStats()">🗑️ Reset All Stats</button></div>`;const activeNations=new Set;units.armies.forEach(army=>{army.nation&&activeNations.add(army.nation)});Object.keys(nationStats).forEach(nation=>activeNations.add(nation));if(activeNations.size===0)statsHTML+='<div class="nation-stat">No nations found. Add some armies first!</div>';else{activeNations.forEach(nation=>{const stats=nationStats[nation]||{battlesWon:0,battlesLost:0,totalDamageDealt:0,totalDamageTaken:0,totalBattles:0},currentArmies=units.armies.filter(army=>army.nation===nation),totalManpower=currentArmies.reduce((sum,army)=>sum+(army.battalions*1000),0),totalBattalions=currentArmies.reduce((sum,army)=>sum+army.battalions,0),winRate=stats.totalBattles>0?((stats.battlesWon/stats.totalBattles)*100).toFixed(1):0,damageEfficiency=stats.totalDamageTaken>0?(stats.totalDamageDealt/stats.totalDamageTaken).toFixed(2):'N/A';statsHTML+=`<div class="nation-stat"><h4>🏴 ${nation.toUpperCase()}</h4><div class="stats-section"><strong>Current Forces:</strong><br>Armies: ${currentArmies.length}<br>Total Battalions: ${totalBattalions.toFixed(2)}<br>Total Manpower: ${Math.round(totalManpower).toLocaleString()} MP</div><div class="stats-section"><strong>Battle Record:</strong><br>Battles Fought: ${stats.totalBattles}<br>Victories: ${stats.battlesWon}<br>Defeats: ${stats.battlesLost}<br>Win Rate: ${winRate}%</div><div class="stats-section"><strong>Combat Performance:</strong><br>Damage Dealt: ${stats.totalDamageDealt.toLocaleString()} MP<br>Damage Taken: ${stats.totalDamageTaken.toLocaleString()} MP<br>Damage Efficiency: ${damageEfficiency}x<br>Net Casualties: ${(stats.totalDamageTaken-stats.totalDamageDealt).toLocaleString()} MP</div><div style="text-align: center; margin-top: 10px;"><button class="reset-btn" onclick="resetNationStats('${nation}')">Reset ${nation} Stats</button></div></div>`})}const totalBattles=Object.values(nationStats).reduce((sum,stats)=>sum+stats.totalBattles,0),totalCasualties=Object.values(nationStats).reduce((sum,stats)=>sum+stats.totalDamageDealt+stats.totalDamageTaken,0);totalBattles>0&&(statsHTML+=`<div class="nation-stat" style="border-color: #2196F3; background: rgba(33, 150, 243, 0.1);"><h4>📈 OVERALL STATISTICS</h4><div class="stats-section">Total Battles: ${totalBattles}<br>Total Casualties: ${Math.round(totalCasualties).toLocaleString()} MP<br>Average Casualties per Battle: ${Math.round(totalCasualties/totalBattles).toLocaleString()} MP</div></div>`);return statsHTML}function refreshStatsDialog(){const dialog=document.querySelector('.stats-dialog');dialog&&(dialog.innerHTML=generateStatsHTML())}function closeStatsDialog(){const dialog=document.querySelector('.stats-dialog');dialog&&document.body.removeChild(dialog)}function resetNationStats(nation){confirm(`Reset all battle statistics for ${nation}?`)&&(delete nationStats[nation],refreshStatsDialog(),showStatus(`${nation} statistics reset!`,'success'))}function resetAllStats(){confirm('Reset ALL nation statistics? This cannot be undone!')&&(nationStats={},refreshStatsDialog(),showStatus('All statistics reset!','success'))}function spawnIrregular(){const dialog=document.createElement('div');dialog.className='irregular-dialog';dialog.innerHTML=`<h3>⚡ Spawn Irregular Division</h3><div><label for="irregularMP">Manpower (1-9999):</label><input type="number" id="irregularMP" class="irregular-input" placeholder="Enter manpower" min="1" max="9999" step="1"></div><div class="irregular-controls"><button class="action-btn" onclick="createIrregular()">✅ Create</button><button class="danger-btn" onclick="closeIrregularDialog()">❌ Cancel</button></div>`;document.body.appendChild(dialog);document.getElementById('irregularMP').focus()}function createIrregular(){const mpInput=document.getElementById('irregularMP'),manpower=parseInt(mpInput.value);if(!manpower||manpower<1||manpower>9999)return showStatus('Please enter valid manpower (1-9999)!','error');const battalions=manpower/1000,nationSelect=document.getElementById('armyNation'),nation=nationSelect?nationSelect.value:(nationList[0]||'default');closeIrregularDialog();currentTool='army';showStatus(`Click on map to place irregular division (${manpower} MP, ${battalions.toFixed(3)} battalions)`,'success');window.pendingIrregular={battalions,nation,manpower}}function closeIrregularDialog(){const dialog=document.querySelector('.irregular-dialog');dialog&&document.body.removeChild(dialog)}function addNation(){const nameInput=document.getElementById('nationName'),filenameInput=document.getElementById('nationFilename'),nationName=nameInput.value.trim();let filename=filenameInput.value.trim();if(!nationName)return showStatus('Please enter nation name!','error');filename||(filename=nationName);filename.includes('.')||(filename+='.png');const nationKey=filename.split('.')[0].toLowerCase().replace(/[^a-z0-9]/g,'');if(nationList.includes(nationKey))return showStatus('Nation already exists!','error');nationList.push(nationKey);const select=document.getElementById('armyNation'),option=document.createElement('option');option.value=nationKey;option.textContent=`${nationName} (${filename})`;select.appendChild(option);nameInput.value='';filenameInput.value='';console.log(`Added nation: "${nationName}" with key: "${nationKey}" for file: "${filename}"`);showStatus(`Nation "${nationName}" added! Auto-loading flag: ${filename}`,'success');autoLoadFlag(nationKey,filename)}function removeNation(){const select=document.getElementById('armyNation'),selectedNation=select.value;if(!selectedNation)return showStatus('Please select a nation to remove!','error');if(confirm(`Remove nation "${selectedNation}" and all its armies?`)){const index=nationList.indexOf(selectedNation);index>-1&&nationList.splice(index,1);const optionToRemove=select.querySelector(`option[value="${selectedNation}"]`);optionToRemove&&optionToRemove.remove();units.armies=units.armies.filter(army=>army.nation!==selectedNation);flagImages[selectedNation]&&delete flagImages[selectedNation];select.selectedIndex=0;redraw();showStatus(`Nation "${selectedNation}" removed!`,'success')}}function setNationBonus(){const nationSelect=document.getElementById('armyNation'),bonusInput=document.getElementById('nationDiceBonus'),selectedNation=nationSelect.value,bonusValue=parseInt(bonusInput.value)||0;if(!selectedNation)return showStatus('Please select a nation first!','error');const clampedBonus=Math.max(-3,Math.min(3,bonusValue));nationBonuses[selectedNation]=clampedBonus;bonusInput.value=clampedBonus;if(clampedBonus===0)delete nationBonuses[selectedNation],showStatus(`${selectedNation} dice bonus removed`,'success');else{const bonusText=clampedBonus>0?`+${clampedBonus}`:`${clampedBonus}`;showStatus(`${selectedNation} dice bonus set to ${bonusText}`,'success')}}document.getElementById('armyNation').addEventListener('change',function(){const selectedNation=this.value,bonusInput=document.getElementById('nationDiceBonus'),currentBonus=nationBonuses[selectedNation]||0;bonusInput.value=currentBonus});function drawUnit(unit,type){ctx.save();ctx.translate(-camera.x,-camera.y);ctx.scale(camera.zoom,camera.zoom);switch(type){case 'army':const battalions=Math.round(unit.battalions*100)/100;let armyColor;switch(Math.floor(unit.battalions)){case 1:armyColor='#000000';break;case 2:armyColor='#FFFFFF';break;case 3:armyColor='#FF0000';break;case 4:armyColor='#00AA00';break;case 5:armyColor='#0000FF';break;default:armyColor=unit.battalions<1?'#666666':'#000000'}let isSelected=selectedForBattle.includes(unit);const flagWidth=unitConfig.army.size*2,flagHeight=25,flagX=unit.x-flagWidth/2,flagY=unit.y-unitConfig.army.size-flagHeight-5;ctx.fillStyle='#FF0000';ctx.fillRect(flagX,flagY,flagWidth,flagHeight);if(unit.nation&&flagImages[unit.nation]){try{ctx.drawImage(flagImages[unit.nation],flagX,flagY,flagWidth,flagHeight)}catch(e){console.error(`Error drawing flag for ${unit.nation}:`,e)}}ctx.strokeStyle=isSelected?'#FFD700':'#000';ctx.lineWidth=isSelected?3/camera.zoom:1/camera.zoom;ctx.strokeRect(flagX,flagY,flagWidth,flagHeight);ctx.fillStyle=armyColor;ctx.strokeStyle=isSelected?'#FFD700':(armyColor==='#FFFFFF'?'#000':'#FFF');ctx.lineWidth=isSelected?4/camera.zoom:2/camera.zoom;ctx.beginPath();ctx.arc(unit.x,unit.y,unitConfig.army.size,0,Math.PI*2);ctx.fill();ctx.stroke();if(camera.zoom>.3){ctx.fillStyle=armyColor==='#FFFFFF'||armyColor==='#FFFF00'?'#000':'#FFF';ctx.font=`bold ${16/camera.zoom}px Arial`;ctx.textAlign='center';const displayValue=battalions<1?battalions.toFixed(1):Math.floor(battalions);ctx.fillText(displayValue,unit.x,unit.y+5);const totalMP=Math.round(unit.battalions*1000);ctx.font=`${11/camera.zoom}px Arial`;ctx.fillStyle='#CCCCCC';ctx.fillText(`${totalMP} MP`,unit.x,unit.y+20);const barWidth=40,barHeight=6,barX=unit.x-barWidth/2,barY=unit.y+30,originalBattalions=unit.originalBattalions||Math.ceil(unit.battalions),currentBattalions=unit.battalions,healthPercentage=Math.min(1,Math.max(0,currentBattalions/originalBattalions));ctx.fillStyle='#000000';ctx.fillRect(barX,barY,barWidth,barHeight);ctx.fillStyle='#00AA00';ctx.fillRect(barX,barY,barWidth*healthPercentage,barHeight);ctx.strokeStyle='#FFFFFF';ctx.lineWidth=1/camera.zoom;ctx.strokeRect(barX,barY,barWidth,barHeight)}break;case 'railroad':const dx=unit.endX-unit.startX,dy=unit.endY-unit.startY,length=Math.sqrt(dx*dx+dy*dy);if(length>0){ctx.strokeStyle='#DAA520';ctx.lineWidth=8/camera.zoom;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(unit.startX,unit.startY);ctx.lineTo(unit.endX,unit.endY);ctx.stroke()}break;case 'silo':ctx.strokeStyle='#8B4513';ctx.lineWidth=4/camera.zoom;ctx.beginPath();ctx.arc(unit.x,unit.y,unitConfig.silo.size+4,0,Math.PI*2);ctx.fillStyle='#8B4513';ctx.fill();ctx.beginPath();ctx.arc(unit.x,unit.y,unitConfig.silo.size,0,Math.PI*2);ctx.fillStyle='#000000';ctx.fill();ctx.stroke();ctx.strokeStyle='#333';ctx.lineWidth=1/camera.zoom;for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(unit.x,unit.y,unitConfig.silo.size-(i*4),0,Math.PI*2);ctx.stroke()}const siloId=unit.x+'_'+unit.y,nukeCount=siloNukes[siloId]||0;if(nukeCount>0&&camera.zoom>.3){ctx.fillStyle='#FF0000';ctx.font=`bold ${12/camera.zoom}px Arial`;ctx.textAlign='center';ctx.fillText(nukeCount,unit.x,unit.y-unitConfig.silo.size-8)}if(nukeTargeting&&targetingSilo&&targetingSilo.x===unit.x&&targetingSilo.y===unit.y){ctx.strokeStyle='rgba(255, 165, 0, 0.5)';ctx.lineWidth=3/camera.zoom;ctx.beginPath();ctx.arc(unit.x,unit.y,unitConfig.silo.size*50,0,Math.PI*2);ctx.stroke()}break;case 'port':ctx.fillStyle=unitConfig.port.color;ctx.strokeStyle='#000';ctx.lineWidth=2/camera.zoom;ctx.fillRect(unit.x-15,unit.y-10,30,20);ctx.strokeRect(unit.x-15,unit.y-10,30,20);ctx.beginPath();ctx.moveTo(unit.x-10,unit.y-10);ctx.lineTo(unit.x-10,unit.y-25);ctx.lineTo(unit.x+10,unit.y-25);ctx.stroke();break}ctx.restore()}function redraw(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();ctx.translate(-camera.x,-camera.y);ctx.scale(camera.zoom,camera.zoom);if(backgroundImage){ctx.drawImage(backgroundImage,0,0);ctx.strokeStyle='#000000';ctx.lineWidth=3/camera.zoom;ctx.strokeRect(0,0,backgroundImage.width,backgroundImage.height)}ctx.restore();units.armies.forEach(unit=>drawUnit(unit,'army'));units.railroads.forEach(unit=>drawUnit(unit,'railroad'));units.silos.forEach(unit=>drawUnit(unit,'silo'));units.ports.forEach(unit=>drawUnit(unit,'port'));tempRailroad&&drawUnit(tempRailroad,'railroad');explosions.forEach(explosion=>{const age=Date.now()-explosion.startTime,maxAge=3000;if(age<maxAge){const alpha=1-(age/maxAge),size=(age/maxAge)*100+20;ctx.save();ctx.translate(-camera.x,-camera.y);ctx.scale(camera.zoom,camera.zoom);ctx.globalAlpha=alpha;ctx.fillStyle='#FF4500';ctx.strokeStyle='#FF0000';ctx.lineWidth=3/camera.zoom;ctx.beginPath();ctx.arc(explosion.x,explosion.y,size,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.restore()}});explosions=explosions.filter(explosion=>Date.now()-explosion.startTime<3000);if(nukeDragging||nukeTargeting){const mousePos=lastMousePos||{x:0,y:0};ctx.fillStyle='#FF0000';ctx.strokeStyle='#000';ctx.lineWidth=2;ctx.beginPath();ctx.arc(mousePos.x,mousePos.y,8,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#FFFF00';ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.fillText('☢',mousePos.x,mousePos.y+4)}updateCounts()}function updateCounts(){document.getElementById('armyCount').textContent=units.armies.length;document.getElementById('railroadCount').textContent=units.railroads.length;document.getElementById('siloCount').textContent=units.silos.length;document.getElementById('portCount').textContent=units.ports.length}function constrainCamera(){if(!backgroundImage)return;const imageWidth=backgroundImage.width,imageHeight=backgroundImage.height,viewWidth=canvas.width/camera.zoom,viewHeight=canvas.height/camera.zoom,minX=0,minY=0,maxX=Math.max(0,imageWidth-viewWidth),maxY=Math.max(0,imageHeight-viewHeight);camera.x=Math.max(minX,Math.min(maxX,camera.x));camera.y=Math.max(minY,Math.min(maxY,camera.y))}function findNearestRailroadEndpoint(x,y,snapDistance=20){let nearest=null,nearestDistance=snapDistance;units.railroads.forEach(railroad=>{const endpoints=[{x:railroad.startX,y:railroad.startY},{x:railroad.endX,y:railroad.endY}];endpoints.forEach(endpoint=>{const distance=Math.sqrt((x-endpoint.x)**2+(y-endpoint.y)**2);distance<nearestDistance&&(nearestDistance=distance,nearest={x:endpoint.x,y:endpoint.y,railroad:railroad})})});return nearest}function getMousePos(e){const rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;return{x:(x+camera.x)/camera.zoom,y:(y+camera.y)/camera.zoom}}function getScreenPos(e){const rect=canvas.getBoundingClientRect();return{x:e.clientX-rect.left,y:e.clientY-rect.top}}function findUnitAt(x,y){for(let i=0;i<units.armies.length;i++){const army=units.armies[i],circleDistance=Math.sqrt((x-army.x)**2+(y-army.y)**2);if(circleDistance<unitConfig.army.size)return{...army,type:'armies',index:i,unit:units.armies[i]};const flagX=army.x-unitConfig.army.size,flagY=army.y-unitConfig.army.size-25-5;if(x>=flagX&&x<=flagX+(unitConfig.army.size*2)&&y>=flagY&&y<=flagY+25)return{...army,type:'armies',index:i,unit:units.armies[i]}}const allUnits=[...units.silos.map(u=>({...u,type:'silos',index:units.silos.indexOf(u),unit:u})),...units.ports.map(u=>({...u,type:'ports',index:units.ports.indexOf(u),unit:u}))];for(let unit of allUnits){const distance=Math.sqrt((x-unit.x)**2+(y-unit.y)**2);if(distance<25)return unit}for(let i=0;i<units.railroads.length;i++){const railroad=units.railroads[i],distance=distanceToLineSegment(x,y,railroad.startX,railroad.startY,railroad.endX,railroad.endY);if(distance<15)return{...railroad,type:'railroads',index:i,unit:railroad}}return null}function distanceToLineSegment(px,py,x1,y1,x2,y2){const A=px-x1,B=py-y1,C=x2-x1,D=y2-y1,dot=A*C+B*D,lenSq=C*C+D*D;let param=-1;lenSq!==0&&(param=dot/lenSq);let xx,yy;param<0?(xx=x1,yy=y1):param>1?(xx=x2,yy=y2):(xx=x1+param*C,yy=y1+param*D);const dx=px-xx,dy=py-yy;return Math.sqrt(dx*dx+dy*dy)}function placeUnit(x,y,type){const newUnit={x,y};switch(type){case 'army':if(window.pendingIrregular){newUnit.battalions=window.pendingIrregular.battalions;newUnit.originalBattalions=newUnit.battalions;newUnit.nation=window.pendingIrregular.nation;showStatus(`Irregular division placed: ${window.pendingIrregular.manpower} MP`,'success');window.pendingIrregular=null}else{const battalionSelect=document.getElementById('armyBattalions'),nationSelect=document.getElementById('armyNation');newUnit.battalions=battalionSelect?parseInt(battalionSelect.value):1;newUnit.originalBattalions=newUnit.battalions;newUnit.nation=nationSelect?nationSelect.value:(nationList[0]||'default')}units.armies.push(newUnit);break;case 'silo':units.silos.push(newUnit);break;case 'port':units.ports.push(newUnit);break}redraw()}function autoLoadFlag(nationKey,filename){const img=new Image;img.onload=()=>{flagImages[nationKey]=img;redraw();console.log(`Auto-loaded flag: ${filename} as "${nationKey}"`)};img.onerror=()=>console.log(`Could not auto-load flag: ${filename}`);img.src=filename}function autoLoadAllFlags(){console.log('Flag auto-loading disabled. Use "Add Nation" button and "🏴 Flags" button to load flags manually.');showStatus('Flag auto-loading disabled. Add nations manually.','success')}function showSiloMenu(silo,screenX,screenY){closeSiloMenu();const menu=document.createElement('div');menu.className='silo-menu';menu.style.left=screenX+'px';menu.style.top=screenY+'px';const siloId=silo.x+'_'+silo.y,nukeCount=siloNukes[siloId]||0,addBtn=document.createElement('button');addBtn.textContent=`Add Nuke (${nukeCount})`;addBtn.onclick=()=>{siloNukes[siloId]=(siloNukes[siloId]||0)+1;closeSiloMenu();redraw();showStatus('Nuke added to silo!','success')};menu.appendChild(addBtn);const moveBtn=document.createElement('button');moveBtn.textContent='Move Nuke';moveBtn.disabled=nukeCount===0;moveBtn.onclick=()=>{nukeCount>0&&(nukeDragging=true,nukeFromSilo=siloId,siloNukes[siloId]=siloNukes[siloId]-1,closeSiloMenu(),redraw(),showStatus('Click another silo to move nuke','success'))};menu.appendChild(moveBtn);const useBtn=document.createElement('button');useBtn.textContent='Use Nuke';useBtn.disabled=nukeCount===0;useBtn.onclick=()=>{nukeCount>0&&(nukeTargeting=true,targetingSilo=silo,siloNukes[siloId]=siloNukes[siloId]-1,closeSiloMenu(),redraw(),showStatus('Click target location within range','success'))};menu.appendChild(useBtn);document.body.appendChild(menu);currentSiloMenu=menu}function closeSiloMenu(){currentSiloMenu&&(document.body.removeChild(currentSiloMenu),currentSiloMenu=null)}function createExplosion(x,y){explosions.push({x:x,y:y,startTime:Date.now()});const blastRadius=50;units.armies=units.armies.filter(unit=>{const distance=Math.sqrt((unit.x-x)**2+(unit.y-y)**2);return distance>blastRadius});redraw()}function deleteUnit(unit){units[unit.type]&&units[unit.type][unit.index]&&(units[unit.type].splice(unit.index,1),redraw())}canvas.addEventListener('mousedown',e=>{const pos=getMousePos(e),screenPos=getScreenPos(e),unit=findUnitAt(pos.x,pos.y);closeSiloMenu();if(e.button===2){unit&&deleteUnit(unit);return}if(e.button===1){e.preventDefault();isPanning=true;lastPanPoint=screenPos;canvas.style.cursor='grabbing';return}if(battleMode&&unit&&unit.type==='armies'){if(selectedForBattle.length===0)selectedForBattle.push(unit.unit),battleAttacker=unit.unit,showStatus(`Attacker selected: ${unit.unit.nation} (${unit.unit.battalions} battalions). Click defender.`,'battle'),redraw();else if(selectedForBattle.length===1&&!selectedForBattle.includes(unit.unit)){selectedForBattle.push(unit.unit);battleDefender=unit.unit;const battleResult=BattleCalculator.conductBattle(battleAttacker,battleDefender);showBattleDialog(battleAttacker,battleDefender,battleResult);showStatus('Battle initiated!','battle');redraw()}else selectedForBattle=[],battleAttacker=null,battleDefender=null,showStatus('Battle selection reset. Click attacker first.','battle'),redraw();return}if(nukeDragging&&unit&&unit.type==='silos'){const targetSiloId=unit.x+'_'+unit.y;siloNukes[targetSiloId]=(siloNukes[targetSiloId]||0)+1;nukeDragging=false;nukeFromSilo=null;redraw();showStatus('Nuke moved to silo!','success');return}if(nukeTargeting&&targetingSilo){const distance=Math.sqrt((pos.x-targetingSilo.x)**2+(pos.y-targetingSilo.y)**2),maxRange=unitConfig.silo.size*50;distance<=maxRange?(createExplosion(pos.x,pos.y),nukeTargeting=false,targetingSilo=null,showStatus('Nuclear strike launched!','success')):showStatus('Target out of range!','error');return}if(unit&&unit.type==='silos'){showSiloMenu(unit,screenPos.x,screenPos.y);return}if(currentTool==='railroad'){const nearestEndpoint=findNearestRailroadEndpoint(pos.x,pos.y);nearestEndpoint?railroadStart={x:nearestEndpoint.x,y:nearestEndpoint.y}:railroadStart={x:pos.x,y:pos.y};railroadDrawing=true;tempRailroad={startX:railroadStart.x,startY:railroadStart.y,endX:pos.x,endY:pos.y}}else if(currentTool==='move'&&unit){isDragging=true;draggedUnit=units[unit.type][unit.index];if(unit.type==='railroads'){const centerX=(unit.startX+unit.endX)/2,centerY=(unit.startY+unit.endY)/2;dragOffset.x=pos.x-centerX;dragOffset.y=pos.y-centerY}else dragOffset.x=pos.x-unit.x,dragOffset.y=pos.y-unit.y;canvas.style.cursor='grabbing'}else currentTool==='delete'&&unit?deleteUnit(unit):['army','silo','port'].includes(currentTool)&&!unit&&placeUnit(pos.x,pos.y,currentTool)});canvas.addEventListener('mousemove',e=>{const pos=getMousePos(e),screenPos=getScreenPos(e);lastMousePos=screenPos;if(isPanning){const deltaX=screenPos.x-lastPanPoint.x,deltaY=screenPos.y-lastPanPoint.y;camera.x-=deltaX;camera.y-=deltaY;constrainCamera();lastPanPoint=screenPos;redraw()}else if(railroadDrawing&&tempRailroad){const nearestEndpoint=findNearestRailroadEndpoint(pos.x,pos.y);nearestEndpoint?(tempRailroad.endX=nearestEndpoint.x,tempRailroad.endY=nearestEndpoint.y):(tempRailroad.endX=pos.x,tempRailroad.endY=pos.y);redraw()}else if(isDragging&&draggedUnit){if(draggedUnit.startX!==undefined){const newCenterX=pos.x-dragOffset.x,newCenterY=pos.y-dragOffset.y,currentCenterX=(draggedUnit.startX+draggedUnit.endX)/2,currentCenterY=(draggedUnit.startY+draggedUnit.endY)/2,deltaX=newCenterX-currentCenterX,deltaY=newCenterY-currentCenterY;draggedUnit.startX+=deltaX;draggedUnit.startY+=deltaY;draggedUnit.endX+=deltaX;draggedUnit.endY+=deltaY}else draggedUnit.x=pos.x-dragOffset.x,draggedUnit.y=pos.y-dragOffset.y;redraw()}else(nukeDragging||nukeTargeting)&&redraw()});canvas.addEventListener('mouseup',()=>{if(isPanning)isPanning=false,canvas.style.cursor='crosshair';else if(railroadDrawing){if(tempRailroad){const length=Math.sqrt((tempRailroad.endX-tempRailroad.startX)**2+(tempRailroad.endY-tempRailroad.startY)**2);length>10&&units.railroads.push({startX:tempRailroad.startX,startY:tempRailroad.startY,endX:tempRailroad.endX,endY:tempRailroad.endY})}railroadDrawing=false;railroadStart=null;tempRailroad=null;redraw()}else isDragging&&(isDragging=false,draggedUnit=null,canvas.style.cursor=currentTool==='move'?'grab':'crosshair')});canvas.addEventListener('wheel',e=>{e.preventDefault();const mousePos=getScreenPos(e),worldX=(mousePos.x+camera.x)/camera.zoom,worldY=(mousePos.y+camera.y)/camera.zoom;e.deltaY<0?camera.zoom*=1.1:camera.zoom/=1.1;camera.zoom=Math.max(.1,Math.min(camera.zoom,10));camera.x=worldX*camera.zoom-mousePos.x;camera.y=worldY*camera.zoom-mousePos.y;constrainCamera();redraw()});canvas.addEventListener('contextmenu',e=>e.preventDefault());function saveMap(){const mapData={version:'2.0',timestamp:new Date().toISOString(),units:units,camera:camera,siloNukes:siloNukes,nationList:nationList,flagImages:Object.keys(flagImages),nationStats:nationStats,nationBonuses:nationBonuses,loadedFlags:Object.keys(flagImages)};try{window.mapSaveData=JSON.stringify(mapData)}catch(e){console.log('Cannot save to browser storage in this environment')}const blob=new Blob([JSON.stringify(mapData,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='strategic_map_save.json';a.click();URL.revokeObjectURL(url);showStatus('Map saved and downloaded!','success')}function loadMap(){document.getElementById('fileInput').click()}function handleFileLoad(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader;reader.onload=e=>{try{const mapData=JSON.parse(e.target.result);loadMapData(mapData);showStatus('Map loaded successfully!','success')}catch(error){showStatus('Error loading file!','error')}};reader.readAsText(file)}function loadMapData(mapData){if(mapData.units){units=mapData.units;mapData.camera&&(camera=mapData.camera);mapData.siloNukes&&(siloNukes=mapData.siloNukes);mapData.nationStats&&(nationStats=mapData.nationStats);mapData.nationBonuses&&(nationBonuses=mapData.nationBonuses);if(mapData.nationList){nationList=mapData.nationList;const select=document.getElementById('armyNation');select.innerHTML='';nationList.forEach(nation=>{const option=document.createElement('option');option.value=nation;option.textContent=nation;select.appendChild(option)})}if(mapData.loadedFlags){mapData.loadedFlags.forEach(flagKey=>{reloadFlag(flagKey)})}redraw()}}function reloadFlag(flagKey){const possibleFiles=[`${flagKey}.png`,`${flagKey.replace(/([a-z])([A-Z])/g,'$1-$2').toLowerCase()}.png`,`${flagKey.toLowerCase()}.png`];possibleFiles.forEach(filename=>{const img=new Image;img.onload=()=>{flagImages[flagKey]=img;console.log(`Reloaded flag: ${filename} as "${flagKey}"`)};img.onerror=()=>{};img.src=filename})}function loadLastSave(){try{const savedData=window.mapSaveData;if(savedData){const mapData=JSON.parse(savedData);loadMapData(mapData);showStatus('Previous save loaded!','success');return true}}catch(error){console.error('Error loading previous save:',error)}return false}function clearMap(){confirm('Are you sure you want to clear all units?')&&(units={armies:[],railroads:[],silos:[],ports:[]},siloNukes={},selectedForBattle=[],battleAttacker=null,battleDefender=null,redraw(),showStatus('Map cleared!','success'))}function loadBackground(){const input=document.createElement('input');input.type='file';input.accept='image/png,image/jpeg,image/jpg,image/gif,image/bmp,image/webp';input.onchange=e=>{const file=e.target.files[0];if(file){const reader=new FileReader;reader.onload=event=>{const img=new Image;img.onload=()=>{backgroundImage=img;camera.x=0;camera.y=0;camera.zoom=Math.min(canvas.width/img.width,canvas.height/img.height);constrainCamera();redraw();showStatus('Background loaded!','success')};img.onerror=()=>showStatus('Error loading image!','error');img.src=event.target.result};reader.readAsDataURL(file)}};input.click()}function loadFlags(){const input=document.createElement('input');input.type='file';input.accept='image/*';input.multiple=true;input.onchange=e=>{const files=e.target.files;let loadedCount=0,totalFiles=files.length;if(totalFiles===0)return;for(let file of files){const reader=new FileReader;reader.onload=event=>{const img=new Image;img.onload=()=>{let nationName=file.name.split('.')[0].toLowerCase();nationName=nationName.replace(/[^a-z0-9]/g,'');flagImages[nationName]=img;loadedCount++;console.log(`Loaded flag: ${file.name} as "${nationName}"`);loadedCount===totalFiles&&(redraw(),showStatus(`${loadedCount} flag(s) loaded!`,'success'),console.log('All flags loaded:',Object.keys(flagImages)))};img.onerror=()=>{console.error(`Failed to load image: ${file.name}`);loadedCount++;loadedCount===totalFiles&&(redraw(),showStatus(`${Object.keys(flagImages).length} flag(s) loaded!`,'success'))};img.src=event.target.result};reader.onerror=()=>{console.error(`Failed to read file: ${file.name}`);loadedCount++;loadedCount===totalFiles&&(redraw(),showStatus(`${Object.keys(flagImages).length} flag(s) loaded!`,'success'))};reader.readAsDataURL(file)}};input.click()}function zoomIn(){camera.zoom*=1.2;constrainCamera();redraw()}function zoomOut(){camera.zoom/=1.2;constrainCamera();redraw()}function resetView(){camera.x=0;camera.y=0;backgroundImage?camera.zoom=Math.min(canvas.width/backgroundImage.width,canvas.height/backgroundImage.height):camera.zoom=1;constrainCamera();redraw()}function showStatus(message,type){const status=document.getElementById('status');status.textContent=message;status.className=`status ${type}`;setTimeout(()=>{status.textContent='';status.className='status'},5000)}function initializeMap(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;if(loadLastSave()){showStatus('Previous save loaded!','success');return}showStatus('Loading background map...','success');const defaultImg=new Image;defaultImg.onload=()=>{backgroundImage=defaultImg;camera.x=0;camera.y=0;camera.zoom=Math.min(canvas.width/defaultImg.width,canvas.height/defaultImg.height);constrainCamera();redraw();showStatus('Map loaded! Use "Add Nation" and "🏴 Flags" to add flags.','success')};defaultImg.onerror=()=>{redraw();showStatus('Welcome to Strategic Map Editor! Use "Add Nation" to create nations.','success')};defaultImg.src='map.png'}window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;redraw()});initializeMap()</script>
+</div>
+
+<div id="console" class="tab-content">
+
+    <div class="console">
+        <div class="header">
+            NationStates Manager v2.6 | Turn <span id="turnCounter">0</span> | Type 'commands' for help
+        </div>
+        
+        <div id="output" class="output"></div>
+        
+        <div class="input-line">
+            <span class="prompt">></span>
+            <input type="text" id="commandInput" placeholder="Enter command..." autocomplete="off">
+        </div>
+        
+        <div class="button-row">
+            <button onclick="GameManager.executeCommand('nations')">Nations</button>
+            <button onclick="GameManager.executeCommand('turn')">Next Turn</button>
+            <button onclick="GameManager.executeCommand('commands')">Commands</button>
+            <button onclick="GameManager.clearOutput()">Clear</button>
+            <button onclick="GameManager.saveData()">Save</button>
+            <button onclick="GameManager.loadData()">Load</button>
+        </div>
+    </div>
+
+    <script>
+        // Global GameManager object
+        window.GameManager = (function() {
+getSaveData: function() {
+                    return gameData;
+                },
+            // Game state
+            let gameData = {
+                nations: {},
+                current_turn: 0,
+                next_id: 1
+            };
+            
+            let reminders = {};
+
+            // Constants
+            const PROVINCE_COSTS = {1: 5000, 2: 3500, 3: 2500, 4: 1500, 5: 1250};
+            const CITY_COSTS = {1: 20000, 2: 15000, 3: 10000, 4: 5000, 5: 2500};
+            const NUKE_COST = 250000;
+            const SILO_COST = 100000;
+            const MP_COST_PER_UNIT = 1;
+            const PORT_COST = 15000;
+            const BATTALION_SIZE = 2000;
+            const DEPLOYMENT_COST = 0.5;
+            const RAILROAD_COST = 1500;
+            const MP_GENERATION = {1: 500, 2: 400, 3: 300, 4: 200, 5: 100};
+            
+            const POLICIES = {
+                third: {
+                    mp_cost_reduction: 0.2,
+                    war_recovery: 0.66,
+                    peace_recovery: 0.5,
+                    peace_gpt_penalty: -0.15,
+                    post_loss_penalty: -0.3,
+                    post_loss_duration: 4
+                },
+                socialist: {
+                    build_cost_reduction: 0.15,
+                    manpower_boost: 0.1,
+                    war_gpt_penalty: -0.2
+                },
+                capitalist: {
+                    war_gpt_boost: 0.15,
+                    expansion_discount: 150,
+                    loan_penalty: 0.35,
+                    upgrade_cost_increase: 0.15
+                }
+            };
+
+            // Initialize
+            function initializeNation(nation) {
+                nation.at_war = nation.at_war || false;
+                nation.mp_losses = nation.mp_losses || 0;
+                nation.loans = nation.loans || [];
+                nation.provinces = nation.provinces || [];
+                nation.cities = nation.cities || [];
+                nation.ports = nation.ports || 0;
+                nation.nukes = nation.nukes || 0;
+                nation.silos = nation.silos || 0;
+                nation.mp_pool = nation.mp_pool || 25000;
+                nation.recruited_mp = nation.recruited_mp || 10000;
+                nation.deployed_mp = nation.deployed_mp || 0;
+                nation.battalions = Math.floor(nation.recruited_mp / BATTALION_SIZE);
+                nation.railroads = nation.railroads || 0;
+                nation.debuffs = nation.debuffs || [];
+                nation.policy = nation.policy || null;
+                nation.post_loss_turns = nation.post_loss_turns || 0;
+                nation.war_history = nation.war_history || [];
+                return nation;
+            }
+
+            // Output functions
+            function print(message) {
+                const output = document.getElementById('output');
+                output.textContent += message + '\n';
+                output.scrollTop = output.scrollHeight;
+            }
+
+            function updateTurnCounter() {
+                document.getElementById('turnCounter').textContent = gameData.current_turn;
+            }
+
+            // Utility functions
+            function calculateGPT(nation) {
+                const provinceIncome = nation.provinces.reduce((sum, p) => 
+                    sum + ({1: 1000, 2: 700, 3: 500, 4: 300, 5: 250}[p.level] || 0), 0);
+                const cityIncome = nation.cities.reduce((sum, c) => 
+                    sum + ({1: 2000, 2: 1500, 3: 1000, 4: 500, 5: 250}[c.level] || 0), 0);
+                
+                const totalDebuff = Math.min(nation.debuffs.reduce((sum, d) => sum + d.percent, 0), 100);
+                const baseGPT = provinceIncome + cityIncome;
+                let grossIncome = Math.floor(baseGPT * (100 - totalDebuff) / 100);
+                
+                const policy = nation.policy;
+                if (policy === 'third') {
+                    if (!nation.at_war) {
+                        grossIncome *= (1 + POLICIES.third.peace_gpt_penalty);
+                    }
+                    if (nation.post_loss_turns > 0) {
+                        grossIncome *= (1 + POLICIES.third.post_loss_penalty);
+                    }
+                } else if (policy === 'socialist' && nation.at_war) {
+                    grossIncome *= (1 + POLICIES.socialist.war_gpt_penalty);
+                } else if (policy === 'capitalist' && nation.at_war) {
+                    grossIncome *= (1 + POLICIES.capitalist.war_gpt_boost);
+                }
+                
+                return Math.floor(grossIncome);
+            }
+
+            // Command handlers
+            const commands = {
+                // Nation management
+                addnation: function(args) {
+                    if (args.length < 2) {
+                        print("Usage: addnation [name] [color]");
+                        return;
+                    }
+                    const name = args.slice(0, -1).join(' ');
+                    const color = args[args.length - 1];
+                    const nationId = gameData.next_id.toString();
+                    
+                    gameData.nations[nationId] = initializeNation({
+                        name: name,
+                        color: color,
+                        gold: 50000,
+                        mp: 25000
+                    });
+                    gameData.next_id++;
+                    print(`Created ${name} (ID: ${nationId})`);
+                },
+
+                removenation: function(args) {
+                    if (args.length !== 1 || !gameData.nations[args[0]]) {
+                        print("Usage: removenation [id]");
+                        return;
+                    }
+                    const name = gameData.nations[args[0]].name;
+                    delete gameData.nations[args[0]];
+                    print(`Removed ${name} (ID: ${args[0]})`);
+                },
+
+                nations: function(args) {
+                    print("\n=== NATIONS ===");
+                    for (const [id, nation] of Object.entries(gameData.nations)) {
+                        const gpt = calculateGPT(nation);
+                        const debuffs = nation.debuffs.reduce((sum, d) => sum + d.percent, 0);
+                        const policy = (nation.policy || 'None').charAt(0).toUpperCase() + (nation.policy || 'None').slice(1);
+                        
+                        print(`\nID: ${id} | ${nation.name} [${nation.at_war ? 'WAR' : 'Peace'}]`);
+                        print(`Policy: ${policy}`);
+                        print(`Gold: ${nation.gold} (+${gpt}/turn)${debuffs ? ` (-${debuffs}% debuff)` : ''}`);
+                        print(`Manpower Pool: ${nation.mp_pool}`);
+                        print(`Military:`);
+                        print(`  Deployed: ${nation.deployed_mp} MP (${Math.floor(nation.deployed_mp/BATTALION_SIZE)} battalions)`);
+                        print(`  Reserve: ${nation.recruited_mp - nation.deployed_mp} MP (${Math.floor((nation.recruited_mp - nation.deployed_mp)/BATTALION_SIZE)} battalions)`);
+                        print(`  Losses: ${nation.mp_losses} MP`);
+                        print(`Ports: ${nation.ports}`);
+                        print(`Nukes: ${nation.nukes} | Silos: ${nation.silos} | Railroads: ${nation.railroads}`);
+                        print(`Provinces: ${nation.provinces.length} | Cities: ${nation.cities.length}`);
+                    }
+                },
+
+                provinces: function(args) {
+                    if (args.length !== 1 || !gameData.nations[args[0]]) {
+                        print("Usage: provinces [id]");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[args[0]];
+                    const provinceCounts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+                    const cityCounts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+                    
+                    nation.provinces.forEach(p => provinceCounts[p.level]++);
+                    nation.cities.forEach(c => cityCounts[c.level]++);
+                    
+                    print(`\n${nation.name}`);
+                    print("PROVINCES");
+                    for (let level = 1; level <= 5; level++) {
+                        print(`${level}: ${provinceCounts[level]}`);
+                    }
+                    
+                    print("\nCITIES");
+                    for (let level = 1; level <= 5; level++) {
+                        print(`${level}: ${cityCounts[level]}`);
+                    }
+                },
+
+                // Province management
+                buyprovince: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: buyprovince [id] [level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, level, amount] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !PROVINCE_COSTS[level]) {
+                        print("Invalid nation ID or province level (1-5)");
+                        return;
+                    }
+                    
+                    const cost = PROVINCE_COSTS[level] * amount;
+                    const nation = gameData.nations[nationId];
+                    
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        for (let i = 0; i < amount; i++) {
+                            nation.provinces.push({
+                                level: level,
+                                mp_generation: MP_GENERATION[level]
+                            });
+                        }
+                        print(`Bought ${amount} level ${level} provinces for ${cost} gold`);
+                    } else {
+                        print("Not enough gold");
+                    }
+                },
+
+                addprovince: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: addprovince [id] [level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, level, amount] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !PROVINCE_COSTS[level]) {
+                        print("Invalid nation ID or province level (1-5)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    for (let i = 0; i < amount; i++) {
+                        nation.provinces.push({
+                            level: level,
+                            mp_generation: MP_GENERATION[level]
+                        });
+                    }
+                    print(`Added ${amount} level ${level} provinces (admin)`);
+                },
+
+                removeprovince: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: removeprovince [id] [level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, level, amount] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !PROVINCE_COSTS[level]) {
+                        print("Invalid nation ID or province level (1-5)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    let removed = 0;
+                    for (let i = nation.provinces.length - 1; i >= 0 && removed < amount; i--) {
+                        if (nation.provinces[i].level === level) {
+                            nation.provinces.splice(i, 1);
+                            removed++;
+                        }
+                    }
+                    print(`Removed ${removed} level ${level} provinces`);
+                },
+
+                renovateprovince: function(args) {
+                    if (args.length !== 4) {
+                        print("Usage: renovateprovince [id] [current_level] [new_level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, currentLevel, newLevel, amount] = [args[0], parseInt(args[1]), parseInt(args[2]), parseInt(args[3])];
+                    if (!gameData.nations[nationId] || !PROVINCE_COSTS[currentLevel] || !PROVINCE_COSTS[newLevel] || newLevel >= currentLevel) {
+                        print("Error: Invalid province levels (must upgrade to higher level)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const cost = (PROVINCE_COSTS[newLevel] - PROVINCE_COSTS[currentLevel]) * amount;
+                    const matching = nation.provinces.filter(p => p.level === currentLevel);
+                    
+                    if (matching.length < amount) {
+                        print(`Only ${matching.length} level ${currentLevel} provinces (need ${amount})`);
+                        return;
+                    }
+                    
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        let upgraded = 0;
+                        for (const p of nation.provinces) {
+                            if (p.level === currentLevel && upgraded < amount) {
+                                p.level = newLevel;
+                                p.mp_generation = MP_GENERATION[newLevel];
+                                upgraded++;
+                            }
+                        }
+                        print(`Renovated ${amount} provinces from level ${currentLevel} to ${newLevel} for ${cost} gold`);
+                    } else {
+                        print(`Need ${cost} gold, but only have ${nation.gold}`);
+                    }
+                },
+
+                upgradeprovince: function(args) {
+                    if (args.length !== 4) {
+                        print("Usage: upgradeprovince [id] [current_level] [new_level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, currentLevel, newLevel, amount] = [args[0], parseInt(args[1]), parseInt(args[2]), parseInt(args[3])];
+                    if (!gameData.nations[nationId] || !PROVINCE_COSTS[currentLevel] || !PROVINCE_COSTS[newLevel] || newLevel >= currentLevel) {
+                        print("Error: Invalid province levels (must upgrade to higher level)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const matching = nation.provinces.filter(p => p.level === currentLevel);
+                    
+                    if (matching.length < amount) {
+                        print(`Only ${matching.length} level ${currentLevel} provinces (need ${amount})`);
+                        return;
+                    }
+                    
+                    let upgraded = 0;
+                    for (const p of nation.provinces) {
+                        if (p.level === currentLevel && upgraded < amount) {
+                            p.level = newLevel;
+                            p.mp_generation = MP_GENERATION[newLevel];
+                            upgraded++;
+                        }
+                    }
+                    print(`Upgraded ${amount} provinces from level ${currentLevel} to ${newLevel} (admin)`);
+                },
+
+                // City management
+                buildcity: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: buildcity [id] [city_level] [tile_level]");
+                        return;
+                    }
+                    
+                    const [nationId, cityLevel, tileLevel] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !CITY_COSTS[cityLevel] || !PROVINCE_COSTS[tileLevel]) {
+                        print("Error: Both city and tile levels must be 1-5");
+                        return;
+                    }
+                    
+                    const cost = CITY_COSTS[cityLevel];
+                    const nation = gameData.nations[nationId];
+                    
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        nation.cities.push({
+                            level: cityLevel,
+                            tile_level: tileLevel
+                        });
+                        print(`Built level ${cityLevel} city on level ${tileLevel} tile for ${cost} gold`);
+                    } else {
+                        print(`Error: Need ${cost} gold, but only have ${nation.gold}`);
+                    }
+                },
+
+                addcity: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: addcity [id] [city_level] [tile_level]");
+                        return;
+                    }
+                    
+                    const [nationId, cityLevel, tileLevel] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !CITY_COSTS[cityLevel] || !PROVINCE_COSTS[tileLevel]) {
+                        print("Error: Both city and tile levels must be 1-5");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].cities.push({
+                        level: cityLevel,
+                        tile_level: tileLevel
+                    });
+                    print(`Added level ${cityLevel} city on level ${tileLevel} tile (admin)`);
+                },
+
+                renovatecity: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: renovatecity [id] [current_level] [new_level]");
+                        return;
+                    }
+                    
+                    const [nationId, currentLevel, newLevel] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !CITY_COSTS[currentLevel] || !CITY_COSTS[newLevel] || newLevel >= currentLevel) {
+                        print("Error: Invalid city levels (must upgrade to higher level)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const cost = CITY_COSTS[newLevel] - CITY_COSTS[currentLevel];
+                    
+                    const city = nation.cities.find(c => c.level === currentLevel);
+                    if (city) {
+                        if (nation.gold >= cost) {
+                            nation.gold -= cost;
+                            city.level = newLevel;
+                            print(`Renovated city from level ${currentLevel} to ${newLevel} for ${cost} gold`);
+                        } else {
+                            print(`Need ${cost} gold, but only have ${nation.gold}`);
+                        }
+                    } else {
+                        print(`No level ${currentLevel} city found`);
+                    }
+                },
+
+                upgradecity: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: upgradecity [id] [current_level] [new_level]");
+                        return;
+                    }
+                    
+                    const [nationId, currentLevel, newLevel] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !CITY_COSTS[currentLevel] || !CITY_COSTS[newLevel] || newLevel >= currentLevel) {
+                        print("Error: Invalid city levels (must upgrade to higher level)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const city = nation.cities.find(c => c.level === currentLevel);
+                    if (city) {
+                        city.level = newLevel;
+                        print(`Upgraded city from level ${currentLevel} to ${newLevel} (admin)`);
+                    } else {
+                        print(`No level ${currentLevel} city found`);
+                    }
+                },
+
+                removecity: function(args) {
+                    if (args.length !== 4) {
+                        print("Usage: removecity [id] [city_level] [tile_level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, cityLevel, tileLevel, amount] = [args[0], parseInt(args[1]), parseInt(args[2]), parseInt(args[3])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    let removed = 0;
+                    
+                    for (let i = nation.cities.length - 1; i >= 0 && removed < amount; i--) {
+                        const city = nation.cities[i];
+                        if (city.level === cityLevel && city.tile_level === tileLevel) {
+                            nation.cities.splice(i, 1);
+                            removed++;
+                        }
+                    }
+                    
+                    print(`Removed ${removed} level ${cityLevel} cities on level ${tileLevel} tiles`);
+                    if (removed < amount) {
+                        print(`Warning: Only found ${removed} matching cities (tried to remove ${amount})`);
+                    }
+                },
+
+                // Military
+                war: function(args) {
+                    if (args.length < 1 || !gameData.nations[args[0]]) {
+                        print("Usage: war [id] [won/lost/tie (optional)]");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[args[0]];
+                    const declaringWar = !nation.at_war;
+                    
+                    nation.at_war = !nation.at_war;
+                    
+                    if (declaringWar) {
+                        nation.deployed_mp = nation.recruited_mp;
+                        print(`All ${nation.battalions} battalions automatically deployed!`);
+                    }
+                    
+                    if (args.length >= 2) {
+                        const outcome = args[1].toLowerCase();
+                        if (['won', 'lost', 'tie'].includes(outcome)) {
+                            nation.war_history.push({
+                                turn: gameData.current_turn,
+                                outcome: outcome
+                            });
+                            if (outcome === 'lost' && nation.policy === 'third') {
+                                nation.post_loss_turns = POLICIES.third.post_loss_duration;
+                                print(`Vampire Economy activated! -30% GPT for ${POLICIES.third.post_loss_duration} turns`);
+                            }
+                        }
+                    }
+                    
+                    if (!nation.at_war) {
+                        nation.deployed_mp = 0;
+                        print("All battalions demobilized during peace");
+                    }
+                    
+                    const status = nation.at_war ? "now at war" : "no longer at war";
+                    print(`${nation.name} is ${status}`);
+                },
+
+                buymp: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buymp [id] [battalions]");
+                        return;
+                    }
+                    
+                    const [nationId, battalions] = [args[0], parseInt(args[1])];
+                    const nation = gameData.nations[nationId];
+                    if (!nation) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const mpCost = battalions * BATTALION_SIZE * MP_COST_PER_UNIT;
+                    
+                    if (nation.mp_pool >= battalions * BATTALION_SIZE) {
+                        if (nation.gold >= mpCost) {
+                            nation.gold -= mpCost;
+                            nation.mp_pool -= battalions * BATTALION_SIZE;
+                            nation.recruited_mp += battalions * BATTALION_SIZE;
+                            nation.battalions = Math.floor(nation.recruited_mp / BATTALION_SIZE);
+                            print(`Recruited ${battalions} battalions for ${mpCost} gold`);
+                        } else {
+                            print(`Need ${mpCost} gold, have ${nation.gold}`);
+                        }
+                    } else {
+                        print(`Not enough MP in pool (need ${battalions * BATTALION_SIZE}, have ${nation.mp_pool})`);
+                    }
+                },
+
+                deploy: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: deploy [id] [battalions]");
+                        return;
+                    }
+                    
+                    const [nationId, battalions] = [args[0], parseInt(args[1])];
+                    const nation = gameData.nations[nationId];
+                    if (!nation) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const available = nation.recruited_mp - nation.deployed_mp;
+                    const maxDeploy = Math.floor(available / BATTALION_SIZE);
+                    
+                    if (battalions <= maxDeploy) {
+                        nation.deployed_mp += battalions * BATTALION_SIZE;
+                        print(`Deployed ${battalions} battalions (${battalions * BATTALION_SIZE} MP)`);
+                    } else {
+                        print(`Only ${maxDeploy} battalions available to deploy`);
+                    }
+                },
+
+                killmp: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: killmp [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const killed = Math.min(amount, nation.recruited_mp);
+                    
+                    // Remove from recruited MP first
+                    nation.recruited_mp -= killed;
+                    nation.mp_losses += killed;
+                    
+                    // If deployed MP exceeds new recruited MP, reduce deployed MP
+                    if (nation.deployed_mp > nation.recruited_mp) {
+                        nation.deployed_mp = nation.recruited_mp;
+                    }
+                    
+                    // Update battalion count
+                    nation.battalions = Math.floor(nation.recruited_mp / BATTALION_SIZE);
+                    
+                    print(`Killed ${killed} MP from reserve/deploy pool (tracking for regeneration)`);
+                },
+
+                removemppool: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: removemppool [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const removed = Math.min(amount, nation.mp_pool);
+                    nation.mp_pool -= removed;
+                    print(`Removed ${removed} MP from manpower pool`);
+                },
+
+                removemp: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: removemp [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const removed = Math.min(amount, nation.recruited_mp);
+                    
+                    // Remove from recruited MP
+                    nation.recruited_mp -= removed;
+                    
+                    // If deployed MP exceeds new recruited MP, reduce deployed MP
+                    if (nation.deployed_mp > nation.recruited_mp) {
+                        nation.deployed_mp = nation.recruited_mp;
+                    }
+                    
+                    // Update battalion count
+                    nation.battalions = Math.floor(nation.recruited_mp / BATTALION_SIZE);
+                    
+                    print(`Removed ${removed} MP from reserve/deploy pool (admin)`);
+                },
+
+                addbattalion: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: addbattalion [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const mpAdded = amount * BATTALION_SIZE;
+                    nation.recruited_mp += mpAdded;
+                    nation.battalions = Math.floor(nation.recruited_mp / BATTALION_SIZE);
+                    print(`Added ${amount} battalions (${mpAdded} MP) to reserve/deploy pool (admin)`);
+                },
+
+                addmppool: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: addmppool [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    nation.mp_pool += amount;
+                    print(`Added ${amount} MP to manpower pool (admin)`);
+                },
+
+                // Infrastructure
+                buildport: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buildport [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const cost = amount * PORT_COST;
+                    
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        nation.ports += amount;
+                        print(`Built ${amount} port(s) for ${cost} gold`);
+                    } else {
+                        print(`Need ${cost} gold, only have ${nation.gold}`);
+                    }
+                },
+
+                addport: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: addport [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].ports += amount;
+                    print(`Added ${amount} port(s) (admin)`);
+                },
+
+                buildrr: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buildrr [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    const nation = gameData.nations[nationId];
+                    if (!nation) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const cost = amount * RAILROAD_COST;
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        nation.railroads += amount;
+                        print(`Built ${amount} railroads for ${cost} gold`);
+                    } else {
+                        print("Not enough gold");
+                    }
+                },
+
+                createrr: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: createrr [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].railroads += amount;
+                    print(`Added ${amount} railroads (admin)`);
+                },
+
+                destroyrr: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: destroyrr [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    const nation = gameData.nations[nationId];
+                    if (!nation) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const removed = Math.min(amount, nation.railroads);
+                    nation.railroads -= removed;
+                    print(`Permanently destroyed ${removed} railroads (no refund)`);
+                },
+
+                // Nuclear weapons
+                buildnuke: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buildnuke [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const cost = amount * NUKE_COST;
+                    const nation = gameData.nations[nationId];
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        nation.nukes += amount;
+                        print(`Built ${amount} nukes for ${cost} gold`);
+                    } else {
+                        print("Not enough gold");
+                    }
+                },
+
+                addnuke: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: addnuke [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].nukes += amount;
+                    print(`Added ${amount} nukes to ${gameData.nations[nationId].name}`);
+                },
+
+                nuke: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: nuke [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    if (nation.nukes >= amount) {
+                        nation.nukes -= amount;
+                        print(`Used ${amount} nukes from ${nation.name}`);
+                    } else {
+                        print("Not enough nukes");
+                    }
+                },
+
+                buysilo: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buysilo [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const cost = amount * SILO_COST;
+                    const nation = gameData.nations[nationId];
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        nation.silos += amount;
+                        print(`Built ${amount} silos for ${cost} gold`);
+                    } else {
+                        print("Not enough gold");
+                    }
+                },
+
+                buildsilo: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buildsilo [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].silos += amount;
+                    print(`Added ${amount} silos to ${gameData.nations[nationId].name} (admin)`);
+                },
+
+                // Economy
+                loan: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: loan [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const gpt = calculateGPT(nation);
+                    const maxLoan = Math.floor(gpt / 2);
+                    
+                    if (amount <= maxLoan) {
+                        nation.gold += amount;
+                        nation.loans.push({
+                            amount: amount,
+                            due_turn: gameData.current_turn + 3,
+                            repaid: false
+                        });
+                        print(`Loan of ${amount} gold given. Repay ${Math.floor(amount * 1.3)} by turn ${gameData.current_turn + 3}`);
+                    } else {
+                        print(`Maximum loan is ${maxLoan} (half of GPT)`);
+                    }
+                },
+
+                addgold: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: addgold [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].gold += amount;
+                    print(`Added ${amount} gold`);
+                },
+
+                removegold: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: removegold [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].gold = Math.max(0, gameData.nations[nationId].gold - amount);
+                    print(`Removed ${amount} gold`);
+                },
+
+                // Policies and effects
+                setpolicy: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: setpolicy [id] [socialist/capitalist/third]");
+                        return;
+                    }
+                    
+                    const [nationId, policy] = [args[0], args[1].toLowerCase()];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    if (POLICIES[policy]) {
+                        gameData.nations[nationId].policy = policy;
+                        print(`${gameData.nations[nationId].name} is now ${policy.toUpperCase()}`);
+                        print(`Effects: ${JSON.stringify(POLICIES[policy])}`);
+                    } else {
+                        print("Invalid policy (socialist/capitalist/third)");
+                    }
+                },
+
+                debuff: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: debuff [id] [percent] [turns]");
+                        return;
+                    }
+                    
+                    const [nationId, percent, turns] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    if (percent >= 0 && percent <= 100) {
+                        gameData.nations[nationId].debuffs.push({
+                            percent: percent,
+                            expires: gameData.current_turn + turns
+                        });
+                        print(`Applied ${percent}% GPT debuff for ${turns} turns`);
+                    } else {
+                        print("Percent must be 0-100");
+                    }
+                },
+
+                buff: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: buff [id] [percent] [turns]");
+                        return;
+                    }
+                    
+                    const [nationId, percent, turns] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    if (percent >= 1 && percent <= 100 && turns > 0) {
+                        gameData.nations[nationId].debuffs.push({
+                            percent: -percent,
+                            expires: gameData.current_turn + turns
+                        });
+                        print(`Added +${percent}% GPT boost for ${turns} turns to ${gameData.nations[nationId].name}`);
+                    } else {
+                        print("Percent must be 1-100 and turns must be positive");
+                    }
+                },
+
+                // Utility
+                reminder: function(args) {
+                    if (args.length < 2) {
+                        print("Usage: reminder [turns] \"[message]\"");
+                        return;
+                    }
+                    
+                    const turns = parseInt(args[0]);
+                    const message = args.slice(1).join(' ');
+                    
+                    if (turns <= 0) {
+                        print("Turn count must be positive");
+                        return;
+                    }
+                    if (!message.trim()) {
+                        print("Message cannot be empty");
+                        return;
+                    }
+                    
+                    const triggerTurn = gameData.current_turn + turns;
+                    if (!reminders[triggerTurn]) {
+                        reminders[triggerTurn] = [];
+                    }
+                    reminders[triggerTurn].push(message);
+                    print(`Reminder set for turn ${triggerTurn}: "${message}"`);
+                },
+
+                reset: function(args) {
+                    if (args.length === 0) {
+                        print("Usage: reset [turn] [gold] [mp] [provinces]");
+                        return;
+                    }
+                    
+                    print("\nWARNING: This will permanently reset:");
+                    if (args.includes("turn")) print("- Turn counter to 1");
+                    if (args.includes("gold")) print("- All nations' gold to 10,000");
+                    if (args.includes("mp")) print("- All nations' MP to 10,000 (5 battalions)");
+                    if (args.includes("provinces")) print("- All nations' provinces to starting state");
+                    
+                    if (confirm("Are you sure? This cannot be undone!")) {
+                        if (args.includes("provinces")) {
+                            gameData.current_turn = 0;
+                            for (const nation of Object.values(gameData.nations)) {
+                                nation.gold = 40000;
+                                nation.mp = 25000;
+                                nation.provinces = [];
+                                nation.cities = [];
+                                nation.loans = [];
+                                nation.at_war = false;
+                                nation.mp_losses = 0;
+                                nation.nukes = 0;
+                                nation.silos = 0;
+                                nation.debuffs = [];
+                            }
+                        } else {
+                            if (args.includes("turn")) {
+                                gameData.current_turn = 0;
+                            }
+                            for (const nation of Object.values(gameData.nations)) {
+                                if (args.includes("gold")) {
+                                    nation.gold = 50000;
+                                }
+                                if (args.includes("mp")) {
+                                    nation.mp = 25000;
+                                }
+                            }
+                        }
+                        updateTurnCounter();
+                        print("Reset completed");
+                    } else {
+                        print("Reset cancelled");
+                    }
+                },
+
+                turn: function(args) {
+                    gameData.current_turn++;
+                    updateTurnCounter();
+                    print(`\n=== TURN ${gameData.current_turn} ===`);
+                    
+                    for (const nation of Object.values(gameData.nations)) {
+                        // 1. MP Generation (every 5 turns)
+                        if (gameData.current_turn % 5 === 0) {
+                            const mpGenerated = nation.provinces.reduce((sum, p) => sum + p.mp_generation, 0);
+                            if (mpGenerated > 0) {
+                                nation.mp_pool += mpGenerated;
+                                print(`${nation.name} generated ${mpGenerated} MP to pool`);
+                            }
+                        }
+                        
+                        // 2. Deployment Maintenance Costs
+                        if (nation.deployed_mp > 0) {
+                            const cost = Math.floor(nation.deployed_mp * DEPLOYMENT_COST);
+                            nation.gold -= cost;
+                            print(`${nation.name} paid ${cost}g for deployed troops`);
+                        }
+
+                        // 3. Gold Income and Policy Modifiers
+                        let grossIncome = calculateGPT(nation);
+                        const policy = nation.policy;
+                        
+                        if (policy === 'third') {
+                            if (!nation.at_war) {
+                                grossIncome *= (1 + POLICIES.third.peace_gpt_penalty);
+                            }
+                            if (nation.post_loss_turns > 0) {
+                                grossIncome *= (1 + POLICIES.third.post_loss_penalty);
+                                nation.post_loss_turns--;
+                            }
+                        } else if (policy === 'socialist' && nation.at_war) {
+                            grossIncome *= (1 + POLICIES.socialist.war_gpt_penalty);
+                        } else if (policy === 'capitalist' && nation.at_war) {
+                            grossIncome *= (1 + POLICIES.capitalist.war_gpt_boost);
+                        }
+                        
+                        nation.gold += Math.floor(grossIncome);
+                        
+                        // 4. Loan Repayment
+                        for (const loan of nation.loans) {
+                            if (!loan.repaid && gameData.current_turn >= loan.due_turn) {
+                                const repayment = Math.floor(loan.amount * 1.3);
+                                if (nation.gold >= repayment) {
+                                    nation.gold -= repayment;
+                                    loan.repaid = true;
+                                    print(`${nation.name} repaid ${repayment} gold`);
+                                } else {
+                                    const penalty = policy === 'capitalist' ? POLICIES.capitalist.loan_penalty : 0.25;
+                                    const penaltyGold = Math.floor(nation.gold * penalty);
+                                    nation.gold -= penaltyGold;
+                                    print(`${nation.name} defaulted! Lost ${penaltyGold} gold (${Math.floor(penalty*100)}% penalty)`);
+                                }
+                            }
+                        }
+
+                        // 5. MP Recovery (to pool)
+                        if (nation.mp_losses > 0) {
+                            let recoveryRate;
+                            if (policy === 'third') {
+                                recoveryRate = nation.at_war ? POLICIES.third.war_recovery : POLICIES.third.peace_recovery;
+                            } else {
+                                recoveryRate = nation.at_war ? 0.33 : 0.25;
+                            }
+                            
+                            const recovered = Math.floor(nation.mp_losses * recoveryRate);
+                            nation.mp_pool += recovered;
+                            nation.mp_losses -= recovered;
+                            if (recovered > 0) {
+                                print(`${nation.name} recovered ${recovered} MP to pool`);
+                            }
+                        }
+                        
+                        // Process debuffs
+                        nation.debuffs = nation.debuffs.filter(d => d.expires > gameData.current_turn);
+                    }
+                    
+                    // Check reminders
+                    const currentTurn = gameData.current_turn.toString();
+                    if (reminders[currentTurn]) {
+                        print("\n=== REMINDERS ===");
+                        for (const msg of reminders[currentTurn]) {
+                            print(`- ${msg}`);
+                        }
+                        delete reminders[currentTurn];
+                    }
+                    
+                    print("Turn processed!");
+                },
+
+                commands: function(args) {
+                    print("\n=== NORMAL COMMANDS ===");
+                    print("Nation Management:");
+                    print("  provinces [id] - Show province/city distribution by level");
+                    print("  setpolicy [id] [socialist/capitalist/third]");
+                    print("  addnation [name] [color]");
+                    print("\nProvinces:");
+                    print("  buyprovince [id] [level] [amount]");
+                    print("  buildport [id] [amount] - Build ports (15000g each)");
+                    print("  renovateprovince [id] [current] [new] [amount]");
+                    print("\nCities:");
+                    print("  buildcity [id] [level] [tile_level]");
+                    print("  renovatecity [id] [current] [new]");
+                    print("\nMilitary:");
+                    print("  war [id]");
+                    print("  buymp [id] [amount]");
+                    print("  killmp [id] [amount]");
+                    print("\nNukes:");
+                    print("  buildnuke [id] [amount]");
+                    print("  nuke [id] [amount]");
+                    print("  deploy [id] [amount]");
+                    print("  buysilo [id] [amount]");
+                    print("\nEconomy:");
+                    print("  loan [id] [amount]");
+                    print("  buildrr [id] [amount] - Railroads (1500g each)");
+                    print("\nUtility:");
+                    print("  reminder [turns] [message]");
+                    print("  nations");
+                    print("  turn");
+                    print("  commands");
+
+                    print("\n=== ADMIN COMMANDS ===");
+                    print("  removenation [id]");
+                    print("  reset [options]");
+                    print("  addprovince [id] [level] [amount]");
+                    print("  removeprovince [id] [level] [amount]");
+                    print("  upgradeprovince [id] [current] [new] [amount]");
+                    print("  addcity [id] [level] [tile_level]");
+                    print("  upgradecity [id] [current] [new]");
+                    print("  removecity [id] [city_level] [tile_level] [amount] - Remove cities (admin)");
+                    print("  addbattalion [id] [amount] - Adds battalions (admin)");
+                    print("  addmppool [id] [amount] - Adds to MP pool (admin)");
+                    print("  removemppool [id] [amount] - Removes MP from pool (admin)");
+                    print("  removemp [id] [amount] - Removes MP from reserve/deploy pool (admin)");
+                    print("  destroyrr [id] [amount] - Permanent removal");
+                    print("  buff [id] [percent] [turns]");
+                    print("  addport [id] [amount] - Add ports (admin)");
+                    print("  debuff [id] [percent] [turns]");
+                    print("  addnuke [id] [amount]");
+                    print("  removecity [id] [city_level] [tile_level] [amount] - Remove cities (admin)");
+                    print("  buildsilo [id] [amount]");
+                    print("  addgold [id] [amount]");
+                    print("  removegold [id] [amount]");
+                    print("  createrr [id] [amount] - Railroads (admin)");
+                }
+            };
+
+            // Public interface
+            return {
+                executeCommand: function(input) {
+                    const parts = input.trim().split(' ');
+                    if (parts.length === 0 || parts[0] === '') return;
+                    
+                    const command = parts[0].toLowerCase();
+                    const args = parts.slice(1);
+                    
+                    if (commands[command]) {
+                        try {
+                            commands[command](args);
+                        } catch (error) {
+                            print(`Error executing command: ${error.message}`);
+                        }
+                    } else {
+                        print("Invalid command. Type 'commands' for help.");
+                    }
+                },
+
+                saveData: function() {
+                    const saveDataObj = {
+                        gameData: gameData,
+                        reminders: reminders
+                    };
+                    localStorage.setItem('nationstates_save', JSON.stringify(saveDataObj));
+                    print("Game saved to browser storage");
+                },
+
+                loadData: function() {
+                    const saved = localStorage.getItem('nationstates_save');
+                    if (saved) {
+                        try {
+                            const data = JSON.parse(saved);
+                            gameData = data.gameData || gameData;
+                            reminders = data.reminders || {};
+                            
+                            // Initialize any missing nation properties
+                            for (const nation of Object.values(gameData.nations)) {
+                                initializeNation(nation);
+                            }
+                            
+                            updateTurnCounter();
+                            print("Game loaded from browser storage");
+                        } catch (error) {
+                            print("Error loading saved data");
+                        }
+                    } else {
+                        print("No saved data found");
+                    }
+                },
+
+                clearOutput: function() {
+                    document.getElementById('output').textContent = '';
+                }
+            };
+        })();
+
+        // Event handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            const commandInput = document.getElementById('commandInput');
+            
+            commandInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const input = this.value.trim();
+                    if (input) {
+                        print(`> ${input}`);
+                        GameManager.executeCommand(input);
+                        this.value = '';
+                    }
+                }
+            });
+
+            // Initialize
+            const output = document.getElementById('output');
+            output.textContent = "NationStates Manager v2.6 loaded\nType 'commands' for help or 'addnation [name] [color]' to create your first nation\n";
+            
+            // Auto-save every 30 seconds
+            setInterval(() => {
+                if (Object.keys(GameManager.gameData || {}).length > 0) {
+                    GameManager.saveData();
+                }
+            }, 30000);
+        });
+    </script>
+
+</div>
+
+
+<!-- Global Save Button -->
+<button id="globalSaveBtn" onclick="saveAllData()" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 5000;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+">💾 Save All</button>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    if (!window.GameManager) {
+        console.error("❌ GameManager not defined at DOMContentLoaded.");
+        return;
+    }
+    document.getElementById("turnBtn")?.addEventListener("click", () => GameManager.executeCommand('turn'));
+    document.getElementById("nationsBtn")?.addEventListener("click", () => GameManager.executeCommand('nations'));
+    document.getElementById("commandsBtn")?.addEventListener("click", () => GameManager.executeCommand('commands'));
+    document.getElementById("clearBtn")?.addEventListener("click", () => GameManager.clearOutput());
+    document.getElementById("saveBtn")?.addEventListener("click", () => GameManager.saveData());
+    document.getElementById("loadBtn")?.addEventListener("click", () => GameManager.loadData());
+    console.log("✅ Console buttons bound.");
+});
+</script>
+
+<script>
+window.GameManager = (function() {
+            // Game state
+            let gameData = {
+                nations: {},
+                current_turn: 0,
+                next_id: 1
+            };
+            
+            let reminders = {};
+
+            // Constants
+            const PROVINCE_COSTS = {1: 5000, 2: 3500, 3: 2500, 4: 1500, 5: 1250};
+            const CITY_COSTS = {1: 20000, 2: 15000, 3: 10000, 4: 5000, 5: 2500};
+            const NUKE_COST = 250000;
+            const SILO_COST = 100000;
+            const MP_COST_PER_UNIT = 1;
+            const PORT_COST = 15000;
+            const BATTALION_SIZE = 2000;
+            const DEPLOYMENT_COST = 0.5;
+            const RAILROAD_COST = 1500;
+            const MP_GENERATION = {1: 500, 2: 400, 3: 300, 4: 200, 5: 100};
+            
+            const POLICIES = {
+                third: {
+                    mp_cost_reduction: 0.2,
+                    war_recovery: 0.66,
+                    peace_recovery: 0.5,
+                    peace_gpt_penalty: -0.15,
+                    post_loss_penalty: -0.3,
+                    post_loss_duration: 4
+                },
+                socialist: {
+                    build_cost_reduction: 0.15,
+                    manpower_boost: 0.1,
+                    war_gpt_penalty: -0.2
+                },
+                capitalist: {
+                    war_gpt_boost: 0.15,
+                    expansion_discount: 150,
+                    loan_penalty: 0.35,
+                    upgrade_cost_increase: 0.15
+                }
+            };
+
+            // Initialize
+            function initializeNation(nation) {
+                nation.at_war = nation.at_war || false;
+                nation.mp_losses = nation.mp_losses || 0;
+                nation.loans = nation.loans || [];
+                nation.provinces = nation.provinces || [];
+                nation.cities = nation.cities || [];
+                nation.ports = nation.ports || 0;
+                nation.nukes = nation.nukes || 0;
+                nation.silos = nation.silos || 0;
+                nation.mp_pool = nation.mp_pool || 25000;
+                nation.recruited_mp = nation.recruited_mp || 10000;
+                nation.deployed_mp = nation.deployed_mp || 0;
+                nation.battalions = Math.floor(nation.recruited_mp / BATTALION_SIZE);
+                nation.railroads = nation.railroads || 0;
+                nation.debuffs = nation.debuffs || [];
+                nation.policy = nation.policy || null;
+                nation.post_loss_turns = nation.post_loss_turns || 0;
+                nation.war_history = nation.war_history || [];
+                return nation;
+            }
+
+            // Output functions
+            function print(message) {
+                const output = document.getElementById('output');
+                output.textContent += message + '\n';
+                output.scrollTop = output.scrollHeight;
+            }
+
+            function updateTurnCounter() {
+                document.getElementById('turnCounter').textContent = gameData.current_turn;
+            }
+
+            // Utility functions
+            function calculateGPT(nation) {
+                const provinceIncome = nation.provinces.reduce((sum, p) => 
+                    sum + ({1: 1000, 2: 700, 3: 500, 4: 300, 5: 250}[p.level] || 0), 0);
+                const cityIncome = nation.cities.reduce((sum, c) => 
+                    sum + ({1: 2000, 2: 1500, 3: 1000, 4: 500, 5: 250}[c.level] || 0), 0);
+                
+                const totalDebuff = Math.min(nation.debuffs.reduce((sum, d) => sum + d.percent, 0), 100);
+                const baseGPT = provinceIncome + cityIncome;
+                let grossIncome = Math.floor(baseGPT * (100 - totalDebuff) / 100);
+                
+                const policy = nation.policy;
+                if (policy === 'third') {
+                    if (!nation.at_war) {
+                        grossIncome *= (1 + POLICIES.third.peace_gpt_penalty);
+                    }
+                    if (nation.post_loss_turns > 0) {
+                        grossIncome *= (1 + POLICIES.third.post_loss_penalty);
+                    }
+                } else if (policy === 'socialist' && nation.at_war) {
+                    grossIncome *= (1 + POLICIES.socialist.war_gpt_penalty);
+                } else if (policy === 'capitalist' && nation.at_war) {
+                    grossIncome *= (1 + POLICIES.capitalist.war_gpt_boost);
+                }
+                
+                return Math.floor(grossIncome);
+            }
+
+            // Command handlers
+            const commands = {
+                // Nation management
+                addnation: function(args) {
+                    if (args.length < 2) {
+                        print("Usage: addnation [name] [color]");
+                        return;
+                    }
+                    const name = args.slice(0, -1).join(' ');
+                    const color = args[args.length - 1];
+                    const nationId = gameData.next_id.toString();
+                    
+                    gameData.nations[nationId] = initializeNation({
+                        name: name,
+                        color: color,
+                        gold: 50000,
+                        mp: 25000
+                    });
+                    gameData.next_id++;
+                    print(`Created ${name} (ID: ${nationId})`);
+                },
+
+                removenation: function(args) {
+                    if (args.length !== 1 || !gameData.nations[args[0]]) {
+                        print("Usage: removenation [id]");
+                        return;
+                    }
+                    const name = gameData.nations[args[0]].name;
+                    delete gameData.nations[args[0]];
+                    print(`Removed ${name} (ID: ${args[0]})`);
+                },
+
+                nations: function(args) {
+                    print("\n=== NATIONS ===");
+                    for (const [id, nation] of Object.entries(gameData.nations)) {
+                        const gpt = calculateGPT(nation);
+                        const debuffs = nation.debuffs.reduce((sum, d) => sum + d.percent, 0);
+                        const policy = (nation.policy || 'None').charAt(0).toUpperCase() + (nation.policy || 'None').slice(1);
+                        
+                        print(`\nID: ${id} | ${nation.name} [${nation.at_war ? 'WAR' : 'Peace'}]`);
+                        print(`Policy: ${policy}`);
+                        print(`Gold: ${nation.gold} (+${gpt}/turn)${debuffs ? ` (-${debuffs}% debuff)` : ''}`);
+                        print(`Manpower Pool: ${nation.mp_pool}`);
+                        print(`Military:`);
+                        print(`  Deployed: ${nation.deployed_mp} MP (${Math.floor(nation.deployed_mp/BATTALION_SIZE)} battalions)`);
+                        print(`  Reserve: ${nation.recruited_mp - nation.deployed_mp} MP (${Math.floor((nation.recruited_mp - nation.deployed_mp)/BATTALION_SIZE)} battalions)`);
+                        print(`  Losses: ${nation.mp_losses} MP`);
+                        print(`Ports: ${nation.ports}`);
+                        print(`Nukes: ${nation.nukes} | Silos: ${nation.silos} | Railroads: ${nation.railroads}`);
+                        print(`Provinces: ${nation.provinces.length} | Cities: ${nation.cities.length}`);
+                    }
+                },
+
+                provinces: function(args) {
+                    if (args.length !== 1 || !gameData.nations[args[0]]) {
+                        print("Usage: provinces [id]");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[args[0]];
+                    const provinceCounts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+                    const cityCounts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+                    
+                    nation.provinces.forEach(p => provinceCounts[p.level]++);
+                    nation.cities.forEach(c => cityCounts[c.level]++);
+                    
+                    print(`\n${nation.name}`);
+                    print("PROVINCES");
+                    for (let level = 1; level <= 5; level++) {
+                        print(`${level}: ${provinceCounts[level]}`);
+                    }
+                    
+                    print("\nCITIES");
+                    for (let level = 1; level <= 5; level++) {
+                        print(`${level}: ${cityCounts[level]}`);
+                    }
+                },
+
+                // Province management
+                buyprovince: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: buyprovince [id] [level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, level, amount] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !PROVINCE_COSTS[level]) {
+                        print("Invalid nation ID or province level (1-5)");
+                        return;
+                    }
+                    
+                    const cost = PROVINCE_COSTS[level] * amount;
+                    const nation = gameData.nations[nationId];
+                    
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        for (let i = 0; i < amount; i++) {
+                            nation.provinces.push({
+                                level: level,
+                                mp_generation: MP_GENERATION[level]
+                            });
+                        }
+                        print(`Bought ${amount} level ${level} provinces for ${cost} gold`);
+                    } else {
+                        print("Not enough gold");
+                    }
+                },
+
+                addprovince: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: addprovince [id] [level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, level, amount] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !PROVINCE_COSTS[level]) {
+                        print("Invalid nation ID or province level (1-5)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    for (let i = 0; i < amount; i++) {
+                        nation.provinces.push({
+                            level: level,
+                            mp_generation: MP_GENERATION[level]
+                        });
+                    }
+                    print(`Added ${amount} level ${level} provinces (admin)`);
+                },
+
+                removeprovince: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: removeprovince [id] [level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, level, amount] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !PROVINCE_COSTS[level]) {
+                        print("Invalid nation ID or province level (1-5)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    let removed = 0;
+                    for (let i = nation.provinces.length - 1; i >= 0 && removed < amount; i--) {
+                        if (nation.provinces[i].level === level) {
+                            nation.provinces.splice(i, 1);
+                            removed++;
+                        }
+                    }
+                    print(`Removed ${removed} level ${level} provinces`);
+                },
+
+                renovateprovince: function(args) {
+                    if (args.length !== 4) {
+                        print("Usage: renovateprovince [id] [current_level] [new_level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, currentLevel, newLevel, amount] = [args[0], parseInt(args[1]), parseInt(args[2]), parseInt(args[3])];
+                    if (!gameData.nations[nationId] || !PROVINCE_COSTS[currentLevel] || !PROVINCE_COSTS[newLevel] || newLevel >= currentLevel) {
+                        print("Error: Invalid province levels (must upgrade to higher level)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const cost = (PROVINCE_COSTS[newLevel] - PROVINCE_COSTS[currentLevel]) * amount;
+                    const matching = nation.provinces.filter(p => p.level === currentLevel);
+                    
+                    if (matching.length < amount) {
+                        print(`Only ${matching.length} level ${currentLevel} provinces (need ${amount})`);
+                        return;
+                    }
+                    
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        let upgraded = 0;
+                        for (const p of nation.provinces) {
+                            if (p.level === currentLevel && upgraded < amount) {
+                                p.level = newLevel;
+                                p.mp_generation = MP_GENERATION[newLevel];
+                                upgraded++;
+                            }
+                        }
+                        print(`Renovated ${amount} provinces from level ${currentLevel} to ${newLevel} for ${cost} gold`);
+                    } else {
+                        print(`Need ${cost} gold, but only have ${nation.gold}`);
+                    }
+                },
+
+                upgradeprovince: function(args) {
+                    if (args.length !== 4) {
+                        print("Usage: upgradeprovince [id] [current_level] [new_level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, currentLevel, newLevel, amount] = [args[0], parseInt(args[1]), parseInt(args[2]), parseInt(args[3])];
+                    if (!gameData.nations[nationId] || !PROVINCE_COSTS[currentLevel] || !PROVINCE_COSTS[newLevel] || newLevel >= currentLevel) {
+                        print("Error: Invalid province levels (must upgrade to higher level)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const matching = nation.provinces.filter(p => p.level === currentLevel);
+                    
+                    if (matching.length < amount) {
+                        print(`Only ${matching.length} level ${currentLevel} provinces (need ${amount})`);
+                        return;
+                    }
+                    
+                    let upgraded = 0;
+                    for (const p of nation.provinces) {
+                        if (p.level === currentLevel && upgraded < amount) {
+                            p.level = newLevel;
+                            p.mp_generation = MP_GENERATION[newLevel];
+                            upgraded++;
+                        }
+                    }
+                    print(`Upgraded ${amount} provinces from level ${currentLevel} to ${newLevel} (admin)`);
+                },
+
+                // City management
+                buildcity: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: buildcity [id] [city_level] [tile_level]");
+                        return;
+                    }
+                    
+                    const [nationId, cityLevel, tileLevel] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !CITY_COSTS[cityLevel] || !PROVINCE_COSTS[tileLevel]) {
+                        print("Error: Both city and tile levels must be 1-5");
+                        return;
+                    }
+                    
+                    const cost = CITY_COSTS[cityLevel];
+                    const nation = gameData.nations[nationId];
+                    
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        nation.cities.push({
+                            level: cityLevel,
+                            tile_level: tileLevel
+                        });
+                        print(`Built level ${cityLevel} city on level ${tileLevel} tile for ${cost} gold`);
+                    } else {
+                        print(`Error: Need ${cost} gold, but only have ${nation.gold}`);
+                    }
+                },
+
+                addcity: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: addcity [id] [city_level] [tile_level]");
+                        return;
+                    }
+                    
+                    const [nationId, cityLevel, tileLevel] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !CITY_COSTS[cityLevel] || !PROVINCE_COSTS[tileLevel]) {
+                        print("Error: Both city and tile levels must be 1-5");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].cities.push({
+                        level: cityLevel,
+                        tile_level: tileLevel
+                    });
+                    print(`Added level ${cityLevel} city on level ${tileLevel} tile (admin)`);
+                },
+
+                renovatecity: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: renovatecity [id] [current_level] [new_level]");
+                        return;
+                    }
+                    
+                    const [nationId, currentLevel, newLevel] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !CITY_COSTS[currentLevel] || !CITY_COSTS[newLevel] || newLevel >= currentLevel) {
+                        print("Error: Invalid city levels (must upgrade to higher level)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const cost = CITY_COSTS[newLevel] - CITY_COSTS[currentLevel];
+                    
+                    const city = nation.cities.find(c => c.level === currentLevel);
+                    if (city) {
+                        if (nation.gold >= cost) {
+                            nation.gold -= cost;
+                            city.level = newLevel;
+                            print(`Renovated city from level ${currentLevel} to ${newLevel} for ${cost} gold`);
+                        } else {
+                            print(`Need ${cost} gold, but only have ${nation.gold}`);
+                        }
+                    } else {
+                        print(`No level ${currentLevel} city found`);
+                    }
+                },
+
+                upgradecity: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: upgradecity [id] [current_level] [new_level]");
+                        return;
+                    }
+                    
+                    const [nationId, currentLevel, newLevel] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId] || !CITY_COSTS[currentLevel] || !CITY_COSTS[newLevel] || newLevel >= currentLevel) {
+                        print("Error: Invalid city levels (must upgrade to higher level)");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const city = nation.cities.find(c => c.level === currentLevel);
+                    if (city) {
+                        city.level = newLevel;
+                        print(`Upgraded city from level ${currentLevel} to ${newLevel} (admin)`);
+                    } else {
+                        print(`No level ${currentLevel} city found`);
+                    }
+                },
+
+                removecity: function(args) {
+                    if (args.length !== 4) {
+                        print("Usage: removecity [id] [city_level] [tile_level] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, cityLevel, tileLevel, amount] = [args[0], parseInt(args[1]), parseInt(args[2]), parseInt(args[3])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    let removed = 0;
+                    
+                    for (let i = nation.cities.length - 1; i >= 0 && removed < amount; i--) {
+                        const city = nation.cities[i];
+                        if (city.level === cityLevel && city.tile_level === tileLevel) {
+                            nation.cities.splice(i, 1);
+                            removed++;
+                        }
+                    }
+                    
+                    print(`Removed ${removed} level ${cityLevel} cities on level ${tileLevel} tiles`);
+                    if (removed < amount) {
+                        print(`Warning: Only found ${removed} matching cities (tried to remove ${amount})`);
+                    }
+                },
+
+                // Military
+                war: function(args) {
+                    if (args.length < 1 || !gameData.nations[args[0]]) {
+                        print("Usage: war [id] [won/lost/tie (optional)]");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[args[0]];
+                    const declaringWar = !nation.at_war;
+                    
+                    nation.at_war = !nation.at_war;
+                    
+                    if (declaringWar) {
+                        nation.deployed_mp = nation.recruited_mp;
+                        print(`All ${nation.battalions} battalions automatically deployed!`);
+                    }
+                    
+                    if (args.length >= 2) {
+                        const outcome = args[1].toLowerCase();
+                        if (['won', 'lost', 'tie'].includes(outcome)) {
+                            nation.war_history.push({
+                                turn: gameData.current_turn,
+                                outcome: outcome
+                            });
+                            if (outcome === 'lost' && nation.policy === 'third') {
+                                nation.post_loss_turns = POLICIES.third.post_loss_duration;
+                                print(`Vampire Economy activated! -30% GPT for ${POLICIES.third.post_loss_duration} turns`);
+                            }
+                        }
+                    }
+                    
+                    if (!nation.at_war) {
+                        nation.deployed_mp = 0;
+                        print("All battalions demobilized during peace");
+                    }
+                    
+                    const status = nation.at_war ? "now at war" : "no longer at war";
+                    print(`${nation.name} is ${status}`);
+                },
+
+                buymp: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buymp [id] [battalions]");
+                        return;
+                    }
+                    
+                    const [nationId, battalions] = [args[0], parseInt(args[1])];
+                    const nation = gameData.nations[nationId];
+                    if (!nation) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const mpCost = battalions * BATTALION_SIZE * MP_COST_PER_UNIT;
+                    
+                    if (nation.mp_pool >= battalions * BATTALION_SIZE) {
+                        if (nation.gold >= mpCost) {
+                            nation.gold -= mpCost;
+                            nation.mp_pool -= battalions * BATTALION_SIZE;
+                            nation.recruited_mp += battalions * BATTALION_SIZE;
+                            nation.battalions = Math.floor(nation.recruited_mp / BATTALION_SIZE);
+                            print(`Recruited ${battalions} battalions for ${mpCost} gold`);
+                        } else {
+                            print(`Need ${mpCost} gold, have ${nation.gold}`);
+                        }
+                    } else {
+                        print(`Not enough MP in pool (need ${battalions * BATTALION_SIZE}, have ${nation.mp_pool})`);
+                    }
+                },
+
+                deploy: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: deploy [id] [battalions]");
+                        return;
+                    }
+                    
+                    const [nationId, battalions] = [args[0], parseInt(args[1])];
+                    const nation = gameData.nations[nationId];
+                    if (!nation) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const available = nation.recruited_mp - nation.deployed_mp;
+                    const maxDeploy = Math.floor(available / BATTALION_SIZE);
+                    
+                    if (battalions <= maxDeploy) {
+                        nation.deployed_mp += battalions * BATTALION_SIZE;
+                        print(`Deployed ${battalions} battalions (${battalions * BATTALION_SIZE} MP)`);
+                    } else {
+                        print(`Only ${maxDeploy} battalions available to deploy`);
+                    }
+                },
+
+                killmp: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: killmp [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const killed = Math.min(amount, nation.recruited_mp);
+                    
+                    // Remove from recruited MP first
+                    nation.recruited_mp -= killed;
+                    nation.mp_losses += killed;
+                    
+                    // If deployed MP exceeds new recruited MP, reduce deployed MP
+                    if (nation.deployed_mp > nation.recruited_mp) {
+                        nation.deployed_mp = nation.recruited_mp;
+                    }
+                    
+                    // Update battalion count
+                    nation.battalions = Math.floor(nation.recruited_mp / BATTALION_SIZE);
+                    
+                    print(`Killed ${killed} MP from reserve/deploy pool (tracking for regeneration)`);
+                },
+
+                removemppool: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: removemppool [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const removed = Math.min(amount, nation.mp_pool);
+                    nation.mp_pool -= removed;
+                    print(`Removed ${removed} MP from manpower pool`);
+                },
+
+                removemp: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: removemp [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const removed = Math.min(amount, nation.recruited_mp);
+                    
+                    // Remove from recruited MP
+                    nation.recruited_mp -= removed;
+                    
+                    // If deployed MP exceeds new recruited MP, reduce deployed MP
+                    if (nation.deployed_mp > nation.recruited_mp) {
+                        nation.deployed_mp = nation.recruited_mp;
+                    }
+                    
+                    // Update battalion count
+                    nation.battalions = Math.floor(nation.recruited_mp / BATTALION_SIZE);
+                    
+                    print(`Removed ${removed} MP from reserve/deploy pool (admin)`);
+                },
+
+                addbattalion: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: addbattalion [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const mpAdded = amount * BATTALION_SIZE;
+                    nation.recruited_mp += mpAdded;
+                    nation.battalions = Math.floor(nation.recruited_mp / BATTALION_SIZE);
+                    print(`Added ${amount} battalions (${mpAdded} MP) to reserve/deploy pool (admin)`);
+                },
+
+                addmppool: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: addmppool [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    nation.mp_pool += amount;
+                    print(`Added ${amount} MP to manpower pool (admin)`);
+                },
+
+                // Infrastructure
+                buildport: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buildport [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const cost = amount * PORT_COST;
+                    
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        nation.ports += amount;
+                        print(`Built ${amount} port(s) for ${cost} gold`);
+                    } else {
+                        print(`Need ${cost} gold, only have ${nation.gold}`);
+                    }
+                },
+
+                addport: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: addport [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].ports += amount;
+                    print(`Added ${amount} port(s) (admin)`);
+                },
+
+                buildrr: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buildrr [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    const nation = gameData.nations[nationId];
+                    if (!nation) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const cost = amount * RAILROAD_COST;
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        nation.railroads += amount;
+                        print(`Built ${amount} railroads for ${cost} gold`);
+                    } else {
+                        print("Not enough gold");
+                    }
+                },
+
+                createrr: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: createrr [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].railroads += amount;
+                    print(`Added ${amount} railroads (admin)`);
+                },
+
+                destroyrr: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: destroyrr [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    const nation = gameData.nations[nationId];
+                    if (!nation) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const removed = Math.min(amount, nation.railroads);
+                    nation.railroads -= removed;
+                    print(`Permanently destroyed ${removed} railroads (no refund)`);
+                },
+
+                // Nuclear weapons
+                buildnuke: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buildnuke [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const cost = amount * NUKE_COST;
+                    const nation = gameData.nations[nationId];
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        nation.nukes += amount;
+                        print(`Built ${amount} nukes for ${cost} gold`);
+                    } else {
+                        print("Not enough gold");
+                    }
+                },
+
+                addnuke: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: addnuke [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].nukes += amount;
+                    print(`Added ${amount} nukes to ${gameData.nations[nationId].name}`);
+                },
+
+                nuke: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: nuke [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    if (nation.nukes >= amount) {
+                        nation.nukes -= amount;
+                        print(`Used ${amount} nukes from ${nation.name}`);
+                    } else {
+                        print("Not enough nukes");
+                    }
+                },
+
+                buysilo: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buysilo [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const cost = amount * SILO_COST;
+                    const nation = gameData.nations[nationId];
+                    if (nation.gold >= cost) {
+                        nation.gold -= cost;
+                        nation.silos += amount;
+                        print(`Built ${amount} silos for ${cost} gold`);
+                    } else {
+                        print("Not enough gold");
+                    }
+                },
+
+                buildsilo: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: buildsilo [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].silos += amount;
+                    print(`Added ${amount} silos to ${gameData.nations[nationId].name} (admin)`);
+                },
+
+                // Economy
+                loan: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: loan [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    const nation = gameData.nations[nationId];
+                    const gpt = calculateGPT(nation);
+                    const maxLoan = Math.floor(gpt / 2);
+                    
+                    if (amount <= maxLoan) {
+                        nation.gold += amount;
+                        nation.loans.push({
+                            amount: amount,
+                            due_turn: gameData.current_turn + 3,
+                            repaid: false
+                        });
+                        print(`Loan of ${amount} gold given. Repay ${Math.floor(amount * 1.3)} by turn ${gameData.current_turn + 3}`);
+                    } else {
+                        print(`Maximum loan is ${maxLoan} (half of GPT)`);
+                    }
+                },
+
+                addgold: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: addgold [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].gold += amount;
+                    print(`Added ${amount} gold`);
+                },
+
+                removegold: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: removegold [id] [amount]");
+                        return;
+                    }
+                    
+                    const [nationId, amount] = [args[0], parseInt(args[1])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid ID");
+                        return;
+                    }
+                    
+                    gameData.nations[nationId].gold = Math.max(0, gameData.nations[nationId].gold - amount);
+                    print(`Removed ${amount} gold`);
+                },
+
+                // Policies and effects
+                setpolicy: function(args) {
+                    if (args.length !== 2) {
+                        print("Usage: setpolicy [id] [socialist/capitalist/third]");
+                        return;
+                    }
+                    
+                    const [nationId, policy] = [args[0], args[1].toLowerCase()];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    if (POLICIES[policy]) {
+                        gameData.nations[nationId].policy = policy;
+                        print(`${gameData.nations[nationId].name} is now ${policy.toUpperCase()}`);
+                        print(`Effects: ${JSON.stringify(POLICIES[policy])}`);
+                    } else {
+                        print("Invalid policy (socialist/capitalist/third)");
+                    }
+                },
+
+                debuff: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: debuff [id] [percent] [turns]");
+                        return;
+                    }
+                    
+                    const [nationId, percent, turns] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    if (percent >= 0 && percent <= 100) {
+                        gameData.nations[nationId].debuffs.push({
+                            percent: percent,
+                            expires: gameData.current_turn + turns
+                        });
+                        print(`Applied ${percent}% GPT debuff for ${turns} turns`);
+                    } else {
+                        print("Percent must be 0-100");
+                    }
+                },
+
+                buff: function(args) {
+                    if (args.length !== 3) {
+                        print("Usage: buff [id] [percent] [turns]");
+                        return;
+                    }
+                    
+                    const [nationId, percent, turns] = [args[0], parseInt(args[1]), parseInt(args[2])];
+                    if (!gameData.nations[nationId]) {
+                        print("Invalid nation ID");
+                        return;
+                    }
+                    
+                    if (percent >= 1 && percent <= 100 && turns > 0) {
+                        gameData.nations[nationId].debuffs.push({
+                            percent: -percent,
+                            expires: gameData.current_turn + turns
+                        });
+                        print(`Added +${percent}% GPT boost for ${turns} turns to ${gameData.nations[nationId].name}`);
+                    } else {
+                        print("Percent must be 1-100 and turns must be positive");
+                    }
+                },
+
+                // Utility
+                reminder: function(args) {
+                    if (args.length < 2) {
+                        print("Usage: reminder [turns] \"[message]\"");
+                        return;
+                    }
+                    
+                    const turns = parseInt(args[0]);
+                    const message = args.slice(1).join(' ');
+                    
+                    if (turns <= 0) {
+                        print("Turn count must be positive");
+                        return;
+                    }
+                    if (!message.trim()) {
+                        print("Message cannot be empty");
+                        return;
+                    }
+                    
+                    const triggerTurn = gameData.current_turn + turns;
+                    if (!reminders[triggerTurn]) {
+                        reminders[triggerTurn] = [];
+                    }
+                    reminders[triggerTurn].push(message);
+                    print(`Reminder set for turn ${triggerTurn}: "${message}"`);
+                },
+
+                reset: function(args) {
+                    if (args.length === 0) {
+                        print("Usage: reset [turn] [gold] [mp] [provinces]");
+                        return;
+                    }
+                    
+                    print("\nWARNING: This will permanently reset:");
+                    if (args.includes("turn")) print("- Turn counter to 1");
+                    if (args.includes("gold")) print("- All nations' gold to 10,000");
+                    if (args.includes("mp")) print("- All nations' MP to 10,000 (5 battalions)");
+                    if (args.includes("provinces")) print("- All nations' provinces to starting state");
+                    
+                    if (confirm("Are you sure? This cannot be undone!")) {
+                        if (args.includes("provinces")) {
+                            gameData.current_turn = 0;
+                            for (const nation of Object.values(gameData.nations)) {
+                                nation.gold = 40000;
+                                nation.mp = 25000;
+                                nation.provinces = [];
+                                nation.cities = [];
+                                nation.loans = [];
+                                nation.at_war = false;
+                                nation.mp_losses = 0;
+                                nation.nukes = 0;
+                                nation.silos = 0;
+                                nation.debuffs = [];
+                            }
+                        } else {
+                            if (args.includes("turn")) {
+                                gameData.current_turn = 0;
+                            }
+                            for (const nation of Object.values(gameData.nations)) {
+                                if (args.includes("gold")) {
+                                    nation.gold = 50000;
+                                }
+                                if (args.includes("mp")) {
+                                    nation.mp = 25000;
+                                }
+                            }
+                        }
+                        updateTurnCounter();
+                        print("Reset completed");
+                    } else {
+                        print("Reset cancelled");
+                    }
+                },
+
+                turn: function(args) {
+                    gameData.current_turn++;
+                    updateTurnCounter();
+                    print(`\n=== TURN ${gameData.current_turn} ===`);
+                    
+                    for (const nation of Object.values(gameData.nations)) {
+                        // 1. MP Generation (every 5 turns)
+                        if (gameData.current_turn % 5 === 0) {
+                            const mpGenerated = nation.provinces.reduce((sum, p) => sum + p.mp_generation, 0);
+                            if (mpGenerated > 0) {
+                                nation.mp_pool += mpGenerated;
+                                print(`${nation.name} generated ${mpGenerated} MP to pool`);
+                            }
+                        }
+                        
+                        // 2. Deployment Maintenance Costs
+                        if (nation.deployed_mp > 0) {
+                            const cost = Math.floor(nation.deployed_mp * DEPLOYMENT_COST);
+                            nation.gold -= cost;
+                            print(`${nation.name} paid ${cost}g for deployed troops`);
+                        }
+
+                        // 3. Gold Income and Policy Modifiers
+                        let grossIncome = calculateGPT(nation);
+                        const policy = nation.policy;
+                        
+                        if (policy === 'third') {
+                            if (!nation.at_war) {
+                                grossIncome *= (1 + POLICIES.third.peace_gpt_penalty);
+                            }
+                            if (nation.post_loss_turns > 0) {
+                                grossIncome *= (1 + POLICIES.third.post_loss_penalty);
+                                nation.post_loss_turns--;
+                            }
+                        } else if (policy === 'socialist' && nation.at_war) {
+                            grossIncome *= (1 + POLICIES.socialist.war_gpt_penalty);
+                        } else if (policy === 'capitalist' && nation.at_war) {
+                            grossIncome *= (1 + POLICIES.capitalist.war_gpt_boost);
+                        }
+                        
+                        nation.gold += Math.floor(grossIncome);
+                        
+                        // 4. Loan Repayment
+                        for (const loan of nation.loans) {
+                            if (!loan.repaid && gameData.current_turn >= loan.due_turn) {
+                                const repayment = Math.floor(loan.amount * 1.3);
+                                if (nation.gold >= repayment) {
+                                    nation.gold -= repayment;
+                                    loan.repaid = true;
+                                    print(`${nation.name} repaid ${repayment} gold`);
+                                } else {
+                                    const penalty = policy === 'capitalist' ? POLICIES.capitalist.loan_penalty : 0.25;
+                                    const penaltyGold = Math.floor(nation.gold * penalty);
+                                    nation.gold -= penaltyGold;
+                                    print(`${nation.name} defaulted! Lost ${penaltyGold} gold (${Math.floor(penalty*100)}% penalty)`);
+                                }
+                            }
+                        }
+
+                        // 5. MP Recovery (to pool)
+                        if (nation.mp_losses > 0) {
+                            let recoveryRate;
+                            if (policy === 'third') {
+                                recoveryRate = nation.at_war ? POLICIES.third.war_recovery : POLICIES.third.peace_recovery;
+                            } else {
+                                recoveryRate = nation.at_war ? 0.33 : 0.25;
+                            }
+                            
+                            const recovered = Math.floor(nation.mp_losses * recoveryRate);
+                            nation.mp_pool += recovered;
+                            nation.mp_losses -= recovered;
+                            if (recovered > 0) {
+                                print(`${nation.name} recovered ${recovered} MP to pool`);
+                            }
+                        }
+                        
+                        // Process debuffs
+                        nation.debuffs = nation.debuffs.filter(d => d.expires > gameData.current_turn);
+                    }
+                    
+                    // Check reminders
+                    const currentTurn = gameData.current_turn.toString();
+                    if (reminders[currentTurn]) {
+                        print("\n=== REMINDERS ===");
+                        for (const msg of reminders[currentTurn]) {
+                            print(`- ${msg}`);
+                        }
+                        delete reminders[currentTurn];
+                    }
+                    
+                    print("Turn processed!");
+                },
+
+                commands: function(args) {
+                    print("\n=== NORMAL COMMANDS ===");
+                    print("Nation Management:");
+                    print("  provinces [id] - Show province/city distribution by level");
+                    print("  setpolicy [id] [socialist/capitalist/third]");
+                    print("  addnation [name] [color]");
+                    print("\nProvinces:");
+                    print("  buyprovince [id] [level] [amount]");
+                    print("  buildport [id] [amount] - Build ports (15000g each)");
+                    print("  renovateprovince [id] [current] [new] [amount]");
+                    print("\nCities:");
+                    print("  buildcity [id] [level] [tile_level]");
+                    print("  renovatecity [id] [current] [new]");
+                    print("\nMilitary:");
+                    print("  war [id]");
+                    print("  buymp [id] [amount]");
+                    print("  killmp [id] [amount]");
+                    print("\nNukes:");
+                    print("  buildnuke [id] [amount]");
+                    print("  nuke [id] [amount]");
+                    print("  deploy [id] [amount]");
+                    print("  buysilo [id] [amount]");
+                    print("\nEconomy:");
+                    print("  loan [id] [amount]");
+                    print("  buildrr [id] [amount] - Railroads (1500g each)");
+                    print("\nUtility:");
+                    print("  reminder [turns] [message]");
+                    print("  nations");
+                    print("  turn");
+                    print("  commands");
+
+                    print("\n=== ADMIN COMMANDS ===");
+                    print("  removenation [id]");
+                    print("  reset [options]");
+                    print("  addprovince [id] [level] [amount]");
+                    print("  removeprovince [id] [level] [amount]");
+                    print("  upgradeprovince [id] [current] [new] [amount]");
+                    print("  addcity [id] [level] [tile_level]");
+                    print("  upgradecity [id] [current] [new]");
+                    print("  removecity [id] [city_level] [tile_level] [amount] - Remove cities (admin)");
+                    print("  addbattalion [id] [amount] - Adds battalions (admin)");
+                    print("  addmppool [id] [amount] - Adds to MP pool (admin)");
+                    print("  removemppool [id] [amount] - Removes MP from pool (admin)");
+                    print("  removemp [id] [amount] - Removes MP from reserve/deploy pool (admin)");
+                    print("  destroyrr [id] [amount] - Permanent removal");
+                    print("  buff [id] [percent] [turns]");
+                    print("  addport [id] [amount] - Add ports (admin)");
+                    print("  debuff [id] [percent] [turns]");
+                    print("  addnuke [id] [amount]");
+                    print("  removecity [id] [city_level] [tile_level] [amount] - Remove cities (admin)");
+                    print("  buildsilo [id] [amount]");
+                    print("  addgold [id] [amount]");
+                    print("  removegold [id] [amount]");
+                    print("  createrr [id] [amount] - Railroads (admin)");
+                }
+            };
+
+            // Public interface
+            return {
+                executeCommand: function(input) {
+                    const parts = input.trim().split(' ');
+                    if (parts.length === 0 || parts[0] === '') return;
+                    
+                    const command = parts[0].toLowerCase();
+                    const args = parts.slice(1);
+                    
+                    if (commands[command]) {
+                        try {
+                            commands[command](args);
+                        } catch (error) {
+                            print(`Error executing command: ${error.message}`);
+                        }
+                    } else {
+                        print("Invalid command. Type 'commands' for help.");
+                    }
+                },
+
+                saveData: function() {
+                    const saveDataObj = {
+                        gameData: gameData,
+                        reminders: reminders
+                    };
+                    localStorage.setItem('nationstates_save', JSON.stringify(saveDataObj));
+                    print("Game saved to browser storage");
+                },
+
+                loadData: function() {
+                    const saved = localStorage.getItem('nationstates_save');
+                    if (saved) {
+                        try {
+                            const data = JSON.parse(saved);
+                            gameData = data.gameData || gameData;
+                            reminders = data.reminders || {};
+                            
+                            // Initialize any missing nation properties
+                            for (const nation of Object.values(gameData.nations)) {
+                                initializeNation(nation);
+                            }
+                            
+                            updateTurnCounter();
+                            print("Game loaded from browser storage");
+                        } catch (error) {
+                            print("Error loading saved data");
+                        }
+                    } else {
+                        print("No saved data found");
+                    }
+                },
+
+                clearOutput: function() {
+                    document.getElementById('output').textContent = '';
+                }
+            };
+        })();
+
+        // Event handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            const commandInput = document.getElementById('commandInput');
+            
+            commandInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const input = this.value.trim();
+                    if (input) {
+                        print(`> ${input}`);
+                        GameManager.executeCommand(input);
+                        this.value = '';
+                    }
+                }
+            });
+
+            // Initialize
+            const output = document.getElementById('output');
+            output.textContent = "NationStates Manager v2.6 loaded\nType 'commands' for help or 'addnation [name] [color]' to create your first nation\n";
+            
+            // Auto-save every 30 seconds
+            setInterval(() => {
+                if (Object.keys(GameManager.gameData || {}).length > 0) {
+                    GameManager.saveData();
+                }
+            }, 30000);
+        });
+    
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    if (!window.GameManager) {
+        console.error("❌ GameManager not defined at DOMContentLoaded.");
+        return;
+    }
+    document.getElementById("turnBtn")?.addEventListener("click", () => GameManager.executeCommand('turn'));
+    document.getElementById("nationsBtn")?.addEventListener("click", () => GameManager.executeCommand('nations'));
+    document.getElementById("commandsBtn")?.addEventListener("click", () => GameManager.executeCommand('commands'));
+    document.getElementById("clearBtn")?.addEventListener("click", () => GameManager.clearOutput());
+    document.getElementById("saveBtn")?.addEventListener("click", () => GameManager.saveData());
+    document.getElementById("loadBtn")?.addEventListener("click", () => GameManager.loadData());
+    console.log("✅ Console buttons bound.");
+});
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const input = document.getElementById("commandInput");
+  if (input) {
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault(); // prevents form submission/print
+        if (window.GameManager && input.value.trim() !== "") {
+          GameManager.executeCommand(input.value);
+          input.value = "";
+        }
+      }
+    });
+  }
+});
+</script>
+
+</body>
+
+<script>
+function saveAllData() {
+    let mapData = {
+        units: typeof units !== 'undefined' ? units : {},
+        camera: typeof camera !== 'undefined' ? camera : {},
+        siloNukes: typeof siloNukes !== 'undefined' ? siloNukes : {},
+        nationList: typeof nationList !== 'undefined' ? nationList : [],
+        nationStats: typeof nationStats !== 'undefined' ? nationStats : {},
+        nationBonuses: typeof nationBonuses !== 'undefined' ? nationBonuses : {},
+        flags: typeof flagImages !== 'undefined' ? Object.keys(flagImages) : []
+    };
+
+    let gameData = window.GameManager?.getSaveData?.() || null;
+    let fullData = { map: mapData, game: gameData };
+
+    const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "nations.json";
+    a.click();
+    URL.revokeObjectURL(url);
+}
+</script>
+
+</html>
